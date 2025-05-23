@@ -2,143 +2,308 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>User License Panel</title>
-  <!-- (Optional: style or Tailwind link) -->
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script>
-    // Admin panel-এর config ও এখানে একই রাখো!
-    const firebaseConfig = {
-      apiKey: "AIzaSy8m3iuH0de6K31q58DlDcm4RFsJfNTt0Y",
-      authDomain: "xsiam-8cd91.firebaseapp.com",
-      databaseURL: "https://xsiam-8cd91-default-rtdb.firebaseio.com",
-      projectId: "xsiam-8cd91",
-      storageBucket: "xsiam-8cd91.appspot.com",
-      messagingSenderId: "449795686178",
-      appId: "1:449795686178:web:67631b23b88be6a0eaef7b",
-      measurementId: "G-C987LSZV4G"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Success Story | Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <!-- Font Awesome CDN for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    /* Modal styling same as before, or use what you had */
-    #licenseModalBackdrop {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.3);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 99999;
-      animation: backdropFade 0.5s ease-in-out;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    @keyframes backdropFade { from {opacity: 0;} to {opacity: 1;} }
-    #licenseModal {
-      background: #fff; padding: 30px; border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-      width: 360px; text-align: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      animation: slideIn 0.6s ease;
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f4f9;
+      color: #333;
     }
-    @keyframes slideIn { from {transform: translateY(-40px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-    #licenseModal h1 { margin: 0; font-size: 24px; color: #222; }
-    #licenseModal h2 { margin-top: 6px; font-size: 16px; color: #28a745; }
-    .instruction { font-size: 14px; margin: 18px 0 4px; color: #333; }
-    .subtext { font-size: 13px; color: black; margin-bottom: 14px; margin-top: 4px; }
-    #licenseKey { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #bbb; margin-bottom: 18px; font-size: 14px; outline: none; transition: 0.3s; }
-    #licenseKey:focus { border-color: #28a745; box-shadow: 0 0 5px rgba(40, 167, 69, 0.3); }
-    .button-group { display: flex; justify-content: space-between; }
-    .button-group button { width: 48%; padding: 10px; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; position: relative; }
-    .verify-btn { background: linear-gradient(to right, #28a745, #218838); color: white; }
-    .verify-btn:hover { background: linear-gradient(to right, #218838, #1e7e34); transform: scale(1.05); box-shadow: 0 4px 12px rgba(40,167,69,0.4); }
-    .cancel-btn { background: linear-gradient(to right, #dc3545, #c82333); color: white; }
-    .cancel-btn:hover { background: linear-gradient(to right, #c82333, #bd2130); transform: scale(1.05); box-shadow: 0 4px 12px rgba(220,53,69,0.4); }
-    #message { margin-top: 15px; font-size: 14px; font-weight: bold; }
-    .success { color: #28a745; }
-    .error { color: #dc3545; }
-    .footer { margin-top: 20px; font-size: 13px; color: #555; }
-    .footer a { color: #007bff; text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
-    .telegram-icon { width: 18px; vertical-align: middle; }
-    .spinner { border: 2px solid #fff; border-top: 2px solid #ccc; border-radius: 50%; width: 16px; height: 16px; animation: spin 0.6s linear infinite; display: inline-block; vertical-align: middle; margin-right: 6px; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    header {
+      background: #ffffff;
+      padding: 100px 20px 50px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(21, 101, 192, 0.15);
+    }
+    header::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 100%;
+      background: #0e3c7c;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+      border-radius: 0 0 50% 50% / 0 0 100% 100%;
+    }
+    .animated-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 3.5rem;
+      position: relative;
+      z-index: 1;
+      color: #0e3c7c;
+      text-shadow: 0 0 8px rgba(14, 60, 124, 0.6);
+      background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: fadeIn 2s ease-in-out forwards;
+      opacity: 0;
+    }
+    .animated-title::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 5px;
+      background: #0e3c7c;
+      bottom: -10px;
+      left: 0;
+      border-radius: 10px;
+      animation: underline 1s ease-out 2s forwards;
+      transform: scaleX(0);
+      transform-origin: left;
+      z-index: 1;
+    }
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+    }
+    @keyframes underline {
+      to {
+        transform: scaleX(1);
+      }
+    }
+    header p {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      position: relative;
+      z-index: 1;
+      color: #164e9f;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+    .section {
+      margin: 40px 0;
+    }
+    .section h2 {
+      font-size: 1.8rem;
+      border-left: 4px solid #6366f1;
+      padding-left: 10px;
+      margin-bottom: 20px;
+    }
+    .about {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #222;
+    }
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .project {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+    }
+    .project:hover {
+      transform: translateY(-5px);
+    }
+    .project h3 {
+      margin-top: 0;
+      color: #1e40af;
+    }
+    footer {
+      background: #1e293b;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: 50px;
+    }
+    a {
+      color: #6366f1;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* Contact section icon styles */
+    .contact-info {
+      font-size: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      color: #164e9f;
+      max-width: 400px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+    .contact-item i {
+      font-size: 1.6rem;
+      color: #0e3c7c;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .contact-item:hover i {
+      color: #6366f1;
+      transform: scale(1.3);
+    }
+    .contact-item:hover {
+      color: #6366f1;
+    }
+    /* Social media below Contact */
+    .social-links {
+      margin-top: 30px;
+      display: flex;
+      gap: 25px;
+      justify-content: flex-start;
+      max-width: 400px;
+    }
+    .social-links a {
+      font-size: 2rem;
+      color: #0e3c7c;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .social-links a:hover {
+      color: #6366f1;
+      transform: scale(1.2);
+    }
+
   </style>
 </head>
 <body>
-  <div id="licenseModalBackdrop">
-    <div id="licenseModal">
-      <h1>UI Script</h1>
-      <h2>By Trader Siam X</h2>
-      <div class="instruction">Enter your license key to continue</div>
-      <div class="subtext">This will authorize your device for system access</div>
-      <input type="text" id="licenseKey" placeholder="Enter license key..." />
-      <div class="button-group">
-        <button class="verify-btn" id="verifyBtn">Verify License</button>
-        <button class="cancel-btn" id="cancelBtn">Cancel</button>
+
+<header>
+  <div class="animated-title">Success Story</div>
+  <p>Web Developer | Designer | Problem Solver</p>
+</header>
+
+<div class="container">
+  <section class="section about">
+    <h2>About Me</h2>
+    <p>
+      <strong>Welcome!</strong><br/>
+      Thank you for visiting my portfolio. I’m dedicated to creating modern, user-friendly websites that not only look great but also deliver exceptional performance. Explore my projects and skills, and feel free to connect if you'd like to collaborate or learn more!
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>Projects</h2>
+    <div class="projects">
+      <div class="project">
+        <h3>E-commerce Website</h3>
+        <p>A full-featured, responsive online shopping platform built for user-friendly experiences.</p>
       </div>
-      <div id="message"></div>
-      <div class="footer">
-        <div style="margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 6px;">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" class="telegram-icon" alt="Telegram" />
-          <a href="https://t.me/TRADERSIAMX" target="_blank">@TRADERSIAMX</a>
-        </div>
-        <div style="margin-top: 5px;">By Trader Siam X</div>
+      <div class="project">
+        <h3>Personal Blog</h3>
+        <p>A sleek, professional blog design to share thoughts, experience, and expertise with the world.</p>
+      </div>
+      <div class="project">
+        <h3>Portfolio Website</h3>
+        <p>My professional portfolio showcasing my work, skills, and projects.</p>
+      </div>
+      <div class="project">
+        <h3>Company Landing Page</h3>
+        <p>Modern, clean landing page to effectively promote company products and services.</p>
+      </div>
+      <div class="project">
+        <h3>Social Media App UI</h3>
+        <p>Interactive, user-friendly UI design for a social networking mobile app.</p>
+      </div>
+      <div class="project">
+        <h3>Online Learning Platform</h3>
+        <p>Responsive e-learning website offering courses with intuitive navigation and smooth UX.</p>
+      </div>
+      <div class="project">
+        <h3>Restaurant Website</h3>
+        <p>Attractive and easy-to-navigate site for showcasing menus and booking tables online.</p>
+      </div>
+      <div class="project">
+        <h3>Travel Blog</h3>
+        <p>Engaging travel stories and guides with beautiful photo galleries and map integration.</p>
+      </div>
+      <div class="project">
+        <h3>Photography Portfolio</h3>
+        <p>Visual showcase of professional photography work with sleek galleries and contact forms.</p>
+      </div>
+      <div class="project">
+        <h3>Event Management Site</h3>
+        <p>Platform for managing events, registrations, and providing event details effectively.</p>
+      </div>
+      <div class="project">
+        <h3>Fitness Tracker App UI</h3>
+        <p>Design focused on intuitive user experience for tracking workouts and health stats.</p>
+      </div>
+      <div class="project">
+        <h3>Real Estate Website</h3>
+        <p>Responsive website with search filters and property listings for real estate agencies.</p>
+      </div>
+      <div class="project">
+        <h3>Non-profit Organization Site</h3>
+        <p>Informative website with donation integration and volunteer sign-up forms.</p>
+      </div>
+      <div class="project">
+        <h3>Portfolio Blog</h3>
+        <p>Combination of portfolio and blog to share projects and personal insights.</p>
+      </div>
+      <div class="project">
+        <h3>Tech Startup Website</h3>
+        <p>Modern website design for a tech startup with product showcases and team introductions.</p>
       </div>
     </div>
-  </div>
-  <script>
-    const inputEl = document.getElementById("licenseKey");
-    const verifyBtn = document.getElementById("verifyBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const messageEl = document.getElementById("message");
-    const modalBackdrop = document.getElementById("licenseModalBackdrop");
+  </section>
 
-    verifyBtn.onclick = async () => {
-      const val = inputEl.value.trim();
-      messageEl.className = "";
-      if(!val) {
-        messageEl.textContent = "❗ Please enter your license key";
-        messageEl.className = "error";
-        return;
-      }
-      messageEl.innerHTML = `<span class="spinner"></span>Verifying...`;
-      verifyBtn.disabled = true;
+  <section class="section">
+    <h2>Contact</h2>
+    <div class="contact-info">
+      <div class="contact-item" onclick="window.location.href='mailto:youremail@example.com'">
+        <i class="fa-solid fa-envelope"></i>
+        <span>youremail@example.com</span>
+      </div>
+      <div class="contact-item" onclick="window.open('tel:+880123456789')">
+        <i class="fa-solid fa-phone"></i>
+        <span>+880 123456789</span>
+      </div>
+      <div class="contact-item" onclick="window.open('https://t.me/yourtelegramusername', '_blank')">
+        <i class="fa-brands fa-telegram"></i>
+        <span>Telegram</span>
+      </div>
+    </div>
 
-      try {
-        // Firestore থেকে লাইসেন্স চেক
-        const snap = await db.collection('licenses').where('key', '==', val).limit(1).get();
-        if(snap.empty) {
-          messageEl.textContent = "❌ License Key Not Found!";
-          messageEl.className = "error";
-        } else {
-          const doc = snap.docs[0];
-          const data = doc.data();
-          if(data.active) {
-            messageEl.innerHTML = "✅ License Verified Successfully!";
-            messageEl.className = "success";
-            setTimeout(() => {
-              modalBackdrop.style.transition = "opacity 0.5s ease";
-              modalBackdrop.style.opacity = "0";
-              setTimeout(() => modalBackdrop.remove(), 500);
-              // এখানে চাইলে redirect বা পেজ আনলক করতে পারো
-            }, 1000);
-          } else {
-            messageEl.textContent = "❌ This license is blocked!";
-            messageEl.className = "error";
-          }
-        }
-      } catch (e) {
-        messageEl.textContent = "❌ Error verifying license.";
-        messageEl.className = "error";
-      }
-      verifyBtn.disabled = false;
-    };
+    <div class="social-links" aria-label="Social Media Links">
+      <a href="https://www.youtube.com/channel/yourchannel" target="_blank" title="YouTube">
+        <i class="fa-brands fa-youtube"></i>
+      </a>
+      <a href="https://www.tiktok.com/@yourtiktokusername" target="_blank" title="TikTok">
+        <i class="fa-brands fa-tiktok"></i>
+      </a>
+    </div>
+  </section>
+</div>
 
-    cancelBtn.onclick = () => {
-      inputEl.value = "";
-      messageEl.textContent = "";
-      messageEl.className = "";
-    };
-  </script>
+<footer>
+  <p>&copy; 2025 Success Story. All rights reserved.</p>
+</footer>
+
 </body>
-</html
+</html>
