@@ -404,47 +404,108 @@
         <button class="deposit-btn">Deposit</button>
       </div>
       <div class="market-area">
-       <!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="bn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>স্ট্যাটিক মার্কেট ক্যান্ডেল চার্ট (Zoomable)</title>
+  <title>ক্যান্ডেল চার্ট টাইমফ্রেম সিলেক্টরসহ</title>
   <style>
     body {
       background-color: #121212;
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
     }
-    #chartCanvas {
-      background-color: #1e1e1e;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    #container {
+      position: relative;
       width: 90vw;
       max-width: 900px;
+    }
+    canvas {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 100%;
       height: 400px;
       display: block;
       cursor: grab;
     }
-    #chartCanvas:active {
+    canvas:active {
       cursor: grabbing;
+    }
+    /* টাইমফ্রেম সিলেক্টর স্টাইল */
+    #timeframeSelector {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #272727;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      width: 80px;
+      text-align: center;
+      padding: 8px 0;
+      user-select: none;
+      z-index: 10;
+    }
+    #timeframeOptions {
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: #272727;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      overflow: hidden;
+      display: none;
+      width: 80px;
+      z-index: 20;
+    }
+    #timeframeOptions div {
+      padding: 8px 0;
+      cursor: pointer;
+      border-top: 1px solid #444;
+      user-select: none;
+      font-size: 14px;
+    }
+    #timeframeOptions div:first-child {
+      border-top: none;
+    }
+    #timeframeOptions div:hover {
+      background: #444;
     }
   </style>
 </head>
 <body>
 
-<canvas id="chartCanvas"></canvas>
+<div id="container">
+  <canvas id="chartCanvas"></canvas>
+
+  <div id="timeframeSelector">5s</div>
+  <div id="timeframeOptions">
+    <div data-duration="5">5s</div>
+    <div data-duration="30">30s</div>
+    <div data-duration="60">1</div>
+    <div data-duration="300">5</div>
+    <div data-duration="1800">30</div>
+  </div>
+</div>
 
 <script>
   const canvas = document.getElementById('chartCanvas');
   const ctx = canvas.getContext('2d');
+  const container = document.getElementById('container');
 
-  // Responsive canvas setup
+  const timeframeSelector = document.getElementById('timeframeSelector');
+  const timeframeOptions = document.getElementById('timeframeOptions');
+
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = canvas.clientWidth * dpr;
@@ -459,12 +520,11 @@
     drawChart();
   });
 
-  const candleBaseWidth = 12;
-  const candleSpacing = 4;
+  const candleBaseWidth = 40;
+  const candleSpacing = 10;
   const maxPrice = 150;
   const minPrice = 50;
   const priceRange = maxPrice - minPrice;
-  const candles = [];
 
   let zoomLevel = 1;
   let offsetX = 0;
@@ -472,19 +532,65 @@
   let dragStartX = 0;
   let dragStartOffsetX = 0;
 
-  // Price to Y coordinate conversion
+  // টাইমফ্রেম (সেকেন্ডে)
+  let candleDuration = 5; // ডিফল্ট ৫ সেকেন্ড
+
+  // price থেকে y pos ক্যালকুলেশন
   function priceToY(price, height) {
-    return ((maxPrice - price) / priceRange) * height;
+    const scaleFactor = 1.5;
+    return ((maxPrice - price) / priceRange) * height * scaleFactor;
   }
 
-  // Generate random candle data
-  function generateCandle(prevClose = 100) {
-    const volatility = 5;
-    const open = prevClose;
-    const close = open + (Math.random() - 0.5) * volatility * 2;
-    const high = Math.max(open, close) + Math.random() * volatility;
-    const low = Math.min(open, close) - Math.random() * volatility;
-    return { open, high, low, close, progress: 0 };
+  const candles = [];
+
+  let currentCandle = {
+    open: 100,
+    high: 100,
+    low: 100,
+    close: 100,
+    startTime: Date.now()
+  };
+
+  function finalizeCurrentCandle() {
+    candles.push({ ...currentCandle });
+    if (candles.length > 100) candles.shift();
+    const lastClose = currentCandle.close;
+    currentCandle = {
+      open: lastClose,
+      high: lastClose,
+      low: lastClose,
+      close: lastClose,
+      startTime: Date.now()
+    };
+  }
+
+  function updateCurrentCandle() {
+    const now = Date.now();
+    const elapsed = (now - currentCandle.startTime) / 1000;
+
+    if (elapsed < candleDuration) {
+      // মুভমেন্ট স্পিড টাইমফ্রেমের সাথে সামঞ্জস্য করে কমানো
+      // যত বেশি ডিউরেশন, তত কম মুভমেন্ট (অল্প ডিউরেশনে মুভ বেশি)
+      // নিচে নিচু মান দিলাম যেন আরও ধীরে মুভমেন্ট হয়
+      const baseSpeed = 0.12;
+      // দীর্ঘ সময় হলে স্পিড কমে যাবে, কম হলে বেশি
+      const movementSpeedFactor = baseSpeed * (5 / candleDuration);
+      
+      let movement = currentCandle.close;
+      const maxAmplitude = 20;
+
+      let randomStep = (Math.random() - 0.5) * maxAmplitude * movementSpeedFactor;
+
+      movement += randomStep;
+
+      movement = Math.min(Math.max(movement, minPrice), maxPrice);
+
+      currentCandle.close = movement;
+      if (movement > currentCandle.high) currentCandle.high = movement;
+      if (movement < currentCandle.low) currentCandle.low = movement;
+    } else {
+      finalizeCurrentCandle();
+    }
   }
 
   function drawChart() {
@@ -499,78 +605,53 @@
     const candleWidth = candleBaseWidth * zoomLevel;
     const totalCandleWidth = candleWidth + candleSpacing;
 
-    for (let i = 0; i < candles.length; i++) {
-      const c = candles[i];
-
+    const drawSingleCandle = (c) => {
       const openY = priceToY(c.open, height - bottomPadding);
       const closeY = priceToY(c.close, height - bottomPadding);
       const highY = priceToY(c.high, height - bottomPadding);
       const lowY = priceToY(c.low, height - bottomPadding);
-
       const color = c.close >= c.open ? '#4caf50' : '#f44336';
 
-      // Draw wick if progress >= 0.3
-      if (c.progress >= 0.3) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.moveTo(x + candleWidth / 2, highY);
-        ctx.lineTo(x + candleWidth / 2, lowY);
-        ctx.stroke();
-      }
+      // Wick
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + candleWidth / 2, highY);
+      ctx.lineTo(x + candleWidth / 2, lowY);
+      ctx.stroke();
 
-      // Draw body if progress >= 0.6
-      if (c.progress >= 0.6) {
-        ctx.fillStyle = color;
-        const bodyTop = Math.min(openY, closeY);
-        const bodyHeight = Math.max(1, Math.abs(closeY - openY));
-        ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
-      }
+      // Body
+      ctx.fillStyle = color;
+      const bodyTop = Math.min(openY, closeY);
+      const bodyHeight = Math.max(1, Math.abs(closeY - openY));
+      ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+    };
 
+    for (let i = 0; i < candles.length; i++) {
+      drawSingleCandle(candles[i]);
       x += totalCandleWidth;
-      if (x > width + totalCandleWidth) break;
     }
+
+    drawSingleCandle(currentCandle);
   }
 
   function update() {
-    for (let c of candles) {
-      if (c.progress < 1) c.progress += 0.05;
-    }
+    updateCurrentCandle();
     drawChart();
     requestAnimationFrame(update);
   }
 
-  // Add candle every 5 seconds
-  setInterval(() => {
-    const lastCandle = candles[candles.length - 1];
-    const newCandle = generateCandle(lastCandle?.close || 100);
-    candles.push(newCandle);
+  update();
 
-    const candleWidth = candleBaseWidth * zoomLevel;
-    const totalWidth = (candleWidth + candleSpacing) * candles.length;
-
-    // Auto-scroll to show latest candle if needed
-    if (totalWidth > canvas.clientWidth) {
-      offsetX = totalWidth - canvas.clientWidth;
-    }
-
-    if (candles.length > 100) candles.shift(); // Keep last 100 candles only
-  }, 5000);
-
-  update(); // Start animation loop
-  drawChart();
-
-  // Drag handler
+  // ড্র্যাগ হ্যান্ডলার
   canvas.addEventListener('mousedown', e => {
     isDragging = true;
     dragStartX = e.clientX;
     dragStartOffsetX = offsetX;
-    canvas.style.cursor = 'grabbing';
   });
 
   window.addEventListener('mouseup', () => {
     isDragging = false;
-    canvas.style.cursor = 'grab';
   });
 
   window.addEventListener('mousemove', e => {
@@ -581,11 +662,10 @@
 
     const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * zoomLevel - canvas.clientWidth);
     if (offsetX > maxOffset) offsetX = maxOffset;
-
     drawChart();
   });
 
-  // Zoom handler
+  // Zoom হ্যান্ডলার
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     const wheel = e.deltaY < 0 ? 1 : -1;
@@ -605,6 +685,37 @@
     zoomLevel = newZoom;
     drawChart();
   }, { passive: false });
+
+  // টাইমফ্রেম সিলেক্টর লজিক
+  timeframeSelector.addEventListener('click', () => {
+    timeframeOptions.style.display = timeframeOptions.style.display === 'block' ? 'none' : 'block';
+  });
+
+  // অপশন সিলেক্ট করলে ডিউরেশন পরিবর্তন হবে
+  timeframeOptions.querySelectorAll('div').forEach(option => {
+    option.addEventListener('click', () => {
+      const newDuration = parseInt(option.getAttribute('data-duration'), 10);
+      if (newDuration && newDuration !== candleDuration) {
+        candleDuration = newDuration;
+        currentCandle.startTime = Date.now();
+        currentCandle.open = currentCandle.close;
+        currentCandle.high = currentCandle.close;
+        currentCandle.low = currentCandle.close;
+      }
+      // selector এর টেক্সট আপডেট
+      timeframeSelector.textContent = option.textContent;
+
+      // অপশন লুকিয়ে দাও
+      timeframeOptions.style.display = 'none';
+    });
+  });
+
+  // ক্লিক এরিয়া বাইরের ক্লিক করলে অপশন লুকিয়ে দেওয়া
+  window.addEventListener('click', (e) => {
+    if (!container.contains(e.target)) {
+      timeframeOptions.style.display = 'none';
+    }
+  });
 </script>
 
 </body>
