@@ -404,37 +404,37 @@
         <button class="deposit-btn">Deposit</button>
       </div>
       <div class="market-area">
-        <!DOCTYPE html>
+       <!DOCTYPE html>
 <html lang="bn">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>স্ট্যাটিক মার্কেট ক্যান্ডেল চার্ট (Zoomable)</title>
-<style>
-  body {
-    background-color: #121212;
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  #chartCanvas {
-    background-color: #1e1e1e;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.8);
-    width: 90vw;
-    max-width: 900px;
-    height: 400px;
-    display: block;
-    cursor: grab;
-  }
-  #chartCanvas:active {
-    cursor: grabbing;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>স্ট্যাটিক মার্কেট ক্যান্ডেল চার্ট (Zoomable)</title>
+  <style>
+    body {
+      background-color: #121212;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #chartCanvas {
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      width: 90vw;
+      max-width: 900px;
+      height: 400px;
+      display: block;
+      cursor: grab;
+    }
+    #chartCanvas:active {
+      cursor: grabbing;
+    }
+  </style>
 </head>
 <body>
 
@@ -444,83 +444,60 @@
   const canvas = document.getElementById('chartCanvas');
   const ctx = canvas.getContext('2d');
 
-  // Responsive canvas setup with DPI scaling
+  // Responsive canvas setup
   function resize() {
     const dpr = window.devicePixelRatio || 1;
     canvas.width = canvas.clientWidth * dpr;
     canvas.height = canvas.clientHeight * dpr;
-    ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
   }
+
   resize();
   window.addEventListener('resize', () => {
     resize();
     drawChart();
   });
 
-  // --- মার্কেট ক্যান্ডেল প্রোপার্টি ও ডাটা ---
-  const candleBaseWidth = 12;  // ডিফল্ট ক্যান্ডেল প্রস্থ (জুম ১x এ)
+  const candleBaseWidth = 12;
   const candleSpacing = 4;
   const maxPrice = 150;
   const minPrice = 50;
+  const priceRange = maxPrice - minPrice;
+  const candles = [];
 
-  // ডাটা মডেল: ওপেন, হাই, লো, ক্লোজ
-  const candles = [
-    { open: 100, high: 110, low: 95, close: 105 },
-    { open: 105, high: 112, low: 102, close: 108 },
-    { open: 108, high: 115, low: 107, close: 112 },
-    { open: 112, high: 120, low: 110, close: 118 },
-    { open: 118, high: 125, low: 115, close: 121 },
-    { open: 121, high: 130, low: 120, close: 128 },
-    { open: 128, high: 135, low: 125, close: 133 },
-    { open: 133, high: 138, low: 130, close: 132 },
-    { open: 132, high: 140, low: 128, close: 138 },
-    { open: 138, high: 145, low: 135, close: 142 },
-    { open: 142, high: 150, low: 140, close: 148 },
-    { open: 148, high: 150, low: 145, close: 147 },
-    { open: 147, high: 149, low: 143, close: 144 },
-    { open: 144, high: 147, low: 141, close: 142 },
-    { open: 142, high: 145, low: 139, close: 140 },
-  ];
-
-  // জুম এবং স্ক্রল স্টেট
-  let zoomLevel = 1;   // 1x মানে বেস প্রস্থ
-  let offsetX = 0;     // হরাইজন্টাল স্ক্রল অফসেট (পিক্সেলে)
+  let zoomLevel = 1;
+  let offsetX = 0;
   let isDragging = false;
   let dragStartX = 0;
   let dragStartOffsetX = 0;
 
-  // প্রাইস রেঞ্জ (স্ট্যাটিক)
-  const priceRange = maxPrice - minPrice;
-
-  // প্রাইসকে y-কোঅর্ডিনেটে রূপান্তর ফাংশন
+  // Price to Y coordinate conversion
   function priceToY(price, height) {
     return ((maxPrice - price) / priceRange) * height;
   }
 
-  // চার্ট ড্র ফাংশন
+  // Generate random candle data
+  function generateCandle(prevClose = 100) {
+    const volatility = 5;
+    const open = prevClose;
+    const close = open + (Math.random() - 0.5) * volatility * 2;
+    const high = Math.max(open, close) + Math.random() * volatility;
+    const low = Math.min(open, close) - Math.random() * volatility;
+    return { open, high, low, close, progress: 0 };
+  }
+
   function drawChart() {
     const width = canvas.clientWidth;
     const height = canvas.clientHeight;
-
-    // ব্যাকগ্রাউন্ড রিফ্রেশ
     ctx.clearRect(0, 0, width, height);
     ctx.fillStyle = '#1e1e1e';
     ctx.fillRect(0, 0, width, height);
 
-    // ড্র এরিয়ায় নিচে একটু প্যাডিং দাও
     const bottomPadding = 20;
-
-    // শুরু x অবস্থান (offsetX নিয়ন্ত্রণ করে)
     let x = -offsetX;
-
-    // প্রতিটি ক্যান্ডেলের প্রস্থ জুম অনুযায়ী
     const candleWidth = candleBaseWidth * zoomLevel;
     const totalCandleWidth = candleWidth + candleSpacing;
-
-    // ডান থেকে বামে (টাইম লাইন)
-    // এখানে আমরা 0 থেকে শুরু করে ডাটা ড্র করবো ডান থেকে বামে না
-    // কারণ ইউজার ড্র্যাগ করতে পারে সহজে
 
     for (let i = 0; i < candles.length; i++) {
       const c = candles[i];
@@ -530,33 +507,60 @@
       const highY = priceToY(c.high, height - bottomPadding);
       const lowY = priceToY(c.low, height - bottomPadding);
 
-      // ক্যান্ডেলের রং (সবুজ বা লাল)
-      const candleColor = c.close >= c.open ? '#4caf50' : '#f44336';
+      const color = c.close >= c.open ? '#4caf50' : '#f44336';
 
-      // উইক ড্র (high-low)
-      ctx.strokeStyle = candleColor;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x + candleWidth / 2, highY);
-      ctx.lineTo(x + candleWidth / 2, lowY);
-      ctx.stroke();
+      // Draw wick if progress >= 0.3
+      if (c.progress >= 0.3) {
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x + candleWidth / 2, highY);
+        ctx.lineTo(x + candleWidth / 2, lowY);
+        ctx.stroke();
+      }
 
-      // বডি ড্র (open-close)
-      ctx.fillStyle = candleColor;
-      const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(1, Math.abs(closeY - openY));
-      ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+      // Draw body if progress >= 0.6
+      if (c.progress >= 0.6) {
+        ctx.fillStyle = color;
+        const bodyTop = Math.min(openY, closeY);
+        const bodyHeight = Math.max(1, Math.abs(closeY - openY));
+        ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+      }
 
       x += totalCandleWidth;
-
-      // ক্যান্ডেল যতদূর যায়, সেটাকে ডিসকার্ড করতে পারো যদি চাইলে
       if (x > width + totalCandleWidth) break;
     }
   }
 
+  function update() {
+    for (let c of candles) {
+      if (c.progress < 1) c.progress += 0.05;
+    }
+    drawChart();
+    requestAnimationFrame(update);
+  }
+
+  // Add candle every 5 seconds
+  setInterval(() => {
+    const lastCandle = candles[candles.length - 1];
+    const newCandle = generateCandle(lastCandle?.close || 100);
+    candles.push(newCandle);
+
+    const candleWidth = candleBaseWidth * zoomLevel;
+    const totalWidth = (candleWidth + candleSpacing) * candles.length;
+
+    // Auto-scroll to show latest candle if needed
+    if (totalWidth > canvas.clientWidth) {
+      offsetX = totalWidth - canvas.clientWidth;
+    }
+
+    if (candles.length > 100) candles.shift(); // Keep last 100 candles only
+  }, 5000);
+
+  update(); // Start animation loop
   drawChart();
 
-  // মাউস/টাচ ড্র্যাগ এর হ্যান্ডলার (স্ক্রল করার জন্য)
+  // Drag handler
   canvas.addEventListener('mousedown', e => {
     isDragging = true;
     dragStartX = e.clientX;
@@ -564,46 +568,36 @@
     canvas.style.cursor = 'grabbing';
   });
 
-  window.addEventListener('mouseup', e => {
+  window.addEventListener('mouseup', () => {
     isDragging = false;
     canvas.style.cursor = 'grab';
   });
 
   window.addEventListener('mousemove', e => {
     if (!isDragging) return;
-    let dx = e.clientX - dragStartX;
+    const dx = e.clientX - dragStartX;
     offsetX = dragStartOffsetX - dx;
-
-    // অফসেট মিনিমাম 0 (লেফট সাইড স্ক্রল লিমিট)
     if (offsetX < 0) offsetX = 0;
 
-    // অফসেট ম্যাক্সিমাম
     const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * zoomLevel - canvas.clientWidth);
     if (offsetX > maxOffset) offsetX = maxOffset;
 
     drawChart();
   });
 
-  // জুম হ্যান্ডলার (মাউস হুইল দিয়ে)
+  // Zoom handler
   canvas.addEventListener('wheel', e => {
     e.preventDefault();
     const wheel = e.deltaY < 0 ? 1 : -1;
     const zoomStep = 0.1;
     let newZoom = zoomLevel + wheel * zoomStep;
-
-    // জুম সীমাবদ্ধতা
     if (newZoom < 0.5) newZoom = 0.5;
     if (newZoom > 3) newZoom = 3;
 
-    // মাউস পজিশনে জুমিং রাখতে হবে
-    // (এইটা একটু কমপ্লেক্স কিন্তু সুন্দর ইউজার এক্সপিরিয়েন্স দিবে)
     const mouseX = e.offsetX;
     const zoomRatio = newZoom / zoomLevel;
-
-    // অফসেট পরিবর্তন করে মাউস পজিশন ধরে রাখা
     offsetX = (offsetX + mouseX) * zoomRatio - mouseX;
 
-    // অফসেট সীমা চেক
     if (offsetX < 0) offsetX = 0;
     const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * newZoom - canvas.clientWidth);
     if (offsetX > maxOffset) offsetX = maxOffset;
