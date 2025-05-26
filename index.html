@@ -1,309 +1,770 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Success Story | Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
-  <!-- Font Awesome CDN for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <title>Binary Trading Platform - Mobile Frame</title>
+  <meta name="viewport" content="width=400, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
-      font-family: 'Roboto', sans-serif;
-      background: #f4f4f9;
-      color: #333;
-    }
-    header {
-      background: #ffffff;
-      padding: 100px 20px 50px;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 8px 20px rgba(21, 101, 192, 0.15);
-    }
-    header::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 100%;
-      height: 100%;
-      background: #0e3c7c;
-      opacity: 0.05;
-      pointer-events: none;
-      z-index: 0;
-      border-radius: 0 0 50% 50% / 0 0 100% 100%;
-    }
-    .animated-title {
-      font-family: 'Poppins', sans-serif;
-      font-size: 3.5rem;
-      position: relative;
-      z-index: 1;
-      color: #0e3c7c;
-      text-shadow: 0 0 8px rgba(14, 60, 124, 0.6);
-      background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: fadeIn 2s ease-in-out forwards;
-      opacity: 0;
-    }
-    .animated-title::after {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 5px;
-      background: #0e3c7c;
-      bottom: -10px;
-      left: 0;
-      border-radius: 10px;
-      animation: underline 1s ease-out 2s forwards;
-      transform: scaleX(0);
-      transform-origin: left;
-      z-index: 1;
-    }
-    @keyframes fadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      from {
-        opacity: 0;
-        transform: translateY(-30px);
-      }
-    }
-    @keyframes underline {
-      to {
-        transform: scaleX(1);
-      }
-    }
-    header p {
-      margin-top: 20px;
-      font-size: 1.1rem;
-      position: relative;
-      z-index: 1;
-      color: #164e9f;
-      font-weight: 500;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-    }
-    .section {
-      margin: 40px 0;
-    }
-    .section h2 {
-      font-size: 1.8rem;
-      border-left: 4px solid #6366f1;
-      padding-left: 10px;
-      margin-bottom: 20px;
-    }
-    .about {
-      font-size: 1.1rem;
-      line-height: 1.8;
-      color: #222;
-    }
-    .projects {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    .project {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .project:hover {
-      transform: translateY(-5px);
-    }
-    .project h3 {
-      margin-top: 0;
-      color: #1e40af;
-    }
-    footer {
-      background: #1e293b;
-      color: #fff;
-      text-align: center;
-      padding: 20px;
-      margin-top: 50px;
-    }
-    a {
-      color: #6366f1;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-
-    /* Contact section icon styles */
-    .contact-info {
-      font-size: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      color: #164e9f;
-      max-width: 400px;
-    }
-    .contact-item {
+      background: #222;
+      height: 100vh;
+      margin: 0;
       display: flex;
       align-items: center;
-      gap: 12px;
-      transition: color 0.3s ease;
-      cursor: pointer;
+      justify-content: center;
     }
-    .contact-item i {
-      font-size: 1.6rem;
-      color: #0e3c7c;
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-    .contact-item:hover i {
-      color: #6366f1;
-      transform: scale(1.3);
-    }
-    .contact-item:hover {
-      color: #6366f1;
-    }
-    /* Social media below Contact */
-    .social-links {
-      margin-top: 30px;
+    .mobile-frame {
+      width: 420px;
+      height: 920px;
+      background: #000;
+      border-radius: 38px;
+      box-shadow: 0 10px 40px 0 #000c, 0 0 0 8px #222;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #444;
       display: flex;
-      gap: 25px;
-      justify-content: flex-start;
-      max-width: 400px;
+      align-items: center;
+      justify-content: center;
     }
-    .social-links a {
-      font-size: 2rem;
-      color: #0e3c7c;
-      transition: color 0.3s ease, transform 0.3s ease;
+    .notch {
+      position: absolute;
+      width: 85px;
+      height: 30px;
+      background: #222;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 0 0 20px 20px;
+      z-index: 10;
+      box-shadow: 0 2px 8px #1116;
     }
-    .social-links a:hover {
-      color: #6366f1;
-      transform: scale(1.2);
+    .binary-container {
+      width: 400px;
+      height: 866px;
+      background: #161b22;
+      color: #fff;
+      border-radius: 28px;
+      overflow: hidden;
+      font-family: 'Inter', Arial, sans-serif;
+      position: relative;
+      margin: auto;
+      box-shadow: 0 8px 28px 0 #0008;
+      display: flex;
+      flex-direction: column;
+    }
+    .binary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 16px 10px 16px;
+      background: #181d24;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .demo-label {
+      background: #232830;
+      color: #ffb74d;
+      font-weight: 700;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 13px;
+    }
+    .balance {
+      font-weight: 700;
+      margin-left: 10px;
+      font-size: 17px;
+    }
+    .dropdown-icon {
+      margin: 0 6px;
+      font-size: 13px;
+    }
+    .notif-badge {
+      background: #ff5656;
+      color: #fff;
+      border-radius: 50%;
+      padding: 2px 7px;
+      font-size: 13px;
+      margin-left: 6px;
+    }
+    .deposit-btn {
+      background: #1ddb66;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 6px 18px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .deposit-btn:hover {
+      background: #17c35a;
+    }
+    .market-area {
+      width: 100%;
+      height: 420px;
+      background: #151922;
+      margin-top: 4px;
+      border-radius: 5px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      font-size: 15px;
+      letter-spacing: 1px;
+      user-select: none;
+    }
+    .form-section {
+      padding: 22px 18px 0 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #181d24;
+      height: 390px;
+      border-top: 1px solid #20242c;
+      flex: 1;
+    }
+    .market-info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    .market-dropdown {
+      position: relative;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 600;
+      gap: 6px;
+      z-index: 10;
+    }
+    .market-dropdown img {
+      vertical-align: text-bottom;
+      margin-right: 4px;
+      border-radius: 2px;
+      border: 1px solid #232830;
+      width: 24px;
+      height: 16px;
+    }
+    .market-dropdown .dropdown-arrow {
+      font-size: 12px;
+      margin-left: 4px;
+      transition: transform 0.2s;
+    }
+    .market-list {
+      display: none;
+      position: absolute;
+      top: 38px;
+      left: 0;
+      min-width: 210px;
+      background: #232830;
+      border-radius: 7px;
+      box-shadow: 0 4px 25px 0 #0006;
+      overflow: hidden;
+      border: 1px solid #232830;
+      z-index: 100;
+    }
+    .market-list.open {
+      display: block;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .market-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 17px;
+    }
+    .market-list-item:hover, .market-list-item.selected {
+      background: #1ddb66;
+      color: #222;
+    }
+    .percent {
+      background: #232830;
+      color: #ffb74d;
+      font-weight: 600;
+      border-radius: 5px;
+      padding: 2px 10px;
+      font-size: 15px;
+    }
+    .form-controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 10px;
+    }
+    .timer-box, .investment-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+    }
+    .timer-box label, .investment-box label {
+      font-size: 14px;
+      color: #aaa;
+    }
+    .timer-value {
+      background: #22252b;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 18px;
+      font-weight: 500;
+      margin-top: 2px;
+      color: #fff;
+      min-width: 80px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .investment-amount-input {
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+    .investment-amount-input input,
+    .investment-amount-input select {
+      background: #22252b;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #fff;
+      padding: 7px 14px;
+      font-size: 17px;
+      width: 110px;
+      text-align: right;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .investment-amount-input input:focus,
+    .investment-amount-input select:focus {
+      border: 1.5px solid #1ddb66;
+    }
+    .investment-amount-input label {
+      font-size: 16px;
+      color: #bbb;
+      margin-right: 5px;
+    }
+    .timer-dropdown {
+      display: none;
+      position: absolute;
+      top: 44px;
+      left: 0;
+      min-width: 110px;
+      background: #232830;
+      border-radius: 7px;
+      box-shadow: 0 4px 25px 0 #0006;
+      overflow: hidden;
+      border: 1px solid #232830;
+      z-index: 50;
+      animation: fadeIn 0.2s;
+    }
+    .timer-dropdown.open {
+      display: block;
+    }
+    .timer-option {
+      padding: 10px 14px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+    }
+    .timer-option:hover, .timer-option.selected {
+      background: #1ddb66;
+      color: #222;
+    }
+    .investment-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    .amount, .payout {
+      color: #1ddb66;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .action-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+      gap: 16px;
+    }
+    .down-btn {
+      background: #ff6c47;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 16px 0;
+      width: 48%;
+      font-size: 19px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .down-btn:hover {
+      background: #e65b35;
+    }
+    .up-btn {
+      background: #1ddb66;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 16px 0;
+      width: 48%;
+      font-size: 19px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .up-btn:hover {
+      background: #17c35a;
     }
 
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      width: 100%;
+      height: 62px;
+      background: #22232c;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      box-shadow: 0 -2px 10px #0006;
+      z-index: 99;
+    }
+    .nav-btn {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      display: flex;
+      position: relative;
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      opacity: 0.78;
+    }
+    .nav-btn.active {
+      opacity: 1;
+    }
+    .nav-btn svg {
+      width: 27px;
+      height: 27px;
+      display: block;
+    }
+    .nav-btn .notif-dot {
+      position: absolute;
+      top: 1px;
+      right: 7px;
+      background: #23aaff;
+      color: #fff;
+      font-size: 13px;
+      font-weight: bold;
+      border-radius: 100%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2.5px solid #22232c;
+      box-shadow: 0 2px 8px #2226;
+    }
+    @media (max-width: 500px) {
+      .mobile-frame { width: 100vw; height: 100vh; min-width: 0; min-height: 0; border-radius: 0; }
+      .binary-container { width: 100vw; height: 100vh; border-radius: 0; }
+      .notch { left: 50%; }
+    }
   </style>
 </head>
 <body>
+  <div class="mobile-frame">
+    <div class="notch"></div>
+    <div class="binary-container">
+      <div class="binary-header">
+        <div class="header-left">
+          <span class="demo-label">DEMO</span>
+          <span class="balance">$13,673.58</span>
+          <span class="dropdown-icon">&#9660;</span>
+          <span class="notif-badge">10</span>
+        </div>
+        <button class="deposit-btn">Deposit</button>
+      </div>
+      <div class="market-area">
+        <!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>স্ট্যাটিক মার্কেট ক্যান্ডেল চার্ট (Zoomable)</title>
+<style>
+  body {
+    background-color: #121212;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  #chartCanvas {
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+    width: 90vw;
+    max-width: 900px;
+    height: 400px;
+    display: block;
+    cursor: grab;
+  }
+  #chartCanvas:active {
+    cursor: grabbing;
+  }
+</style>
+</head>
+<body>
 
-<header>
-  <div class="animated-title">Success Story</div>
-  <p>Web Developer | Designer | Problem Solver</p>
-</header>
+<canvas id="chartCanvas"></canvas>
 
-<div class="container">
-  <section class="section about">
-    <h2>About Me</h2>
-    <p>
-      <strong>Welcome!</strong><br/>
-      Thank you for visiting my portfolio. I’m dedicated to creating modern, user-friendly websites that not only look great but also deliver exceptional performance. Explore my projects and skills, and feel free to connect if you'd like to collaborate or learn more!
-    </p>
-  </section>
+<script>
+  const canvas = document.getElementById('chartCanvas');
+  const ctx = canvas.getContext('2d');
 
-  <section class="section">
-    <h2>Projects</h2>
-    <div class="projects">
-      <div class="project">
-        <h3>E-commerce Website</h3>
-        <p>A full-featured, responsive online shopping platform built for user-friendly experiences.</p>
+  // Responsive canvas setup with DPI scaling
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.clientWidth * dpr;
+    canvas.height = canvas.clientHeight * dpr;
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+    ctx.scale(dpr, dpr);
+  }
+  resize();
+  window.addEventListener('resize', () => {
+    resize();
+    drawChart();
+  });
+
+  // --- মার্কেট ক্যান্ডেল প্রোপার্টি ও ডাটা ---
+  const candleBaseWidth = 12;  // ডিফল্ট ক্যান্ডেল প্রস্থ (জুম ১x এ)
+  const candleSpacing = 4;
+  const maxPrice = 150;
+  const minPrice = 50;
+
+  // ডাটা মডেল: ওপেন, হাই, লো, ক্লোজ
+  const candles = [
+    { open: 100, high: 110, low: 95, close: 105 },
+    { open: 105, high: 112, low: 102, close: 108 },
+    { open: 108, high: 115, low: 107, close: 112 },
+    { open: 112, high: 120, low: 110, close: 118 },
+    { open: 118, high: 125, low: 115, close: 121 },
+    { open: 121, high: 130, low: 120, close: 128 },
+    { open: 128, high: 135, low: 125, close: 133 },
+    { open: 133, high: 138, low: 130, close: 132 },
+    { open: 132, high: 140, low: 128, close: 138 },
+    { open: 138, high: 145, low: 135, close: 142 },
+    { open: 142, high: 150, low: 140, close: 148 },
+    { open: 148, high: 150, low: 145, close: 147 },
+    { open: 147, high: 149, low: 143, close: 144 },
+    { open: 144, high: 147, low: 141, close: 142 },
+    { open: 142, high: 145, low: 139, close: 140 },
+  ];
+
+  // জুম এবং স্ক্রল স্টেট
+  let zoomLevel = 1;   // 1x মানে বেস প্রস্থ
+  let offsetX = 0;     // হরাইজন্টাল স্ক্রল অফসেট (পিক্সেলে)
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartOffsetX = 0;
+
+  // প্রাইস রেঞ্জ (স্ট্যাটিক)
+  const priceRange = maxPrice - minPrice;
+
+  // প্রাইসকে y-কোঅর্ডিনেটে রূপান্তর ফাংশন
+  function priceToY(price, height) {
+    return ((maxPrice - price) / priceRange) * height;
+  }
+
+  // চার্ট ড্র ফাংশন
+  function drawChart() {
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+
+    // ব্যাকগ্রাউন্ড রিফ্রেশ
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 0, width, height);
+
+    // ড্র এরিয়ায় নিচে একটু প্যাডিং দাও
+    const bottomPadding = 20;
+
+    // শুরু x অবস্থান (offsetX নিয়ন্ত্রণ করে)
+    let x = -offsetX;
+
+    // প্রতিটি ক্যান্ডেলের প্রস্থ জুম অনুযায়ী
+    const candleWidth = candleBaseWidth * zoomLevel;
+    const totalCandleWidth = candleWidth + candleSpacing;
+
+    // ডান থেকে বামে (টাইম লাইন)
+    // এখানে আমরা 0 থেকে শুরু করে ডাটা ড্র করবো ডান থেকে বামে না
+    // কারণ ইউজার ড্র্যাগ করতে পারে সহজে
+
+    for (let i = 0; i < candles.length; i++) {
+      const c = candles[i];
+
+      const openY = priceToY(c.open, height - bottomPadding);
+      const closeY = priceToY(c.close, height - bottomPadding);
+      const highY = priceToY(c.high, height - bottomPadding);
+      const lowY = priceToY(c.low, height - bottomPadding);
+
+      // ক্যান্ডেলের রং (সবুজ বা লাল)
+      const candleColor = c.close >= c.open ? '#4caf50' : '#f44336';
+
+      // উইক ড্র (high-low)
+      ctx.strokeStyle = candleColor;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(x + candleWidth / 2, highY);
+      ctx.lineTo(x + candleWidth / 2, lowY);
+      ctx.stroke();
+
+      // বডি ড্র (open-close)
+      ctx.fillStyle = candleColor;
+      const bodyTop = Math.min(openY, closeY);
+      const bodyHeight = Math.max(1, Math.abs(closeY - openY));
+      ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
+
+      x += totalCandleWidth;
+
+      // ক্যান্ডেল যতদূর যায়, সেটাকে ডিসকার্ড করতে পারো যদি চাইলে
+      if (x > width + totalCandleWidth) break;
+    }
+  }
+
+  drawChart();
+
+  // মাউস/টাচ ড্র্যাগ এর হ্যান্ডলার (স্ক্রল করার জন্য)
+  canvas.addEventListener('mousedown', e => {
+    isDragging = true;
+    dragStartX = e.clientX;
+    dragStartOffsetX = offsetX;
+    canvas.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mouseup', e => {
+    isDragging = false;
+    canvas.style.cursor = 'grab';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    let dx = e.clientX - dragStartX;
+    offsetX = dragStartOffsetX - dx;
+
+    // অফসেট মিনিমাম 0 (লেফট সাইড স্ক্রল লিমিট)
+    if (offsetX < 0) offsetX = 0;
+
+    // অফসেট ম্যাক্সিমাম
+    const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * zoomLevel - canvas.clientWidth);
+    if (offsetX > maxOffset) offsetX = maxOffset;
+
+    drawChart();
+  });
+
+  // জুম হ্যান্ডলার (মাউস হুইল দিয়ে)
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const wheel = e.deltaY < 0 ? 1 : -1;
+    const zoomStep = 0.1;
+    let newZoom = zoomLevel + wheel * zoomStep;
+
+    // জুম সীমাবদ্ধতা
+    if (newZoom < 0.5) newZoom = 0.5;
+    if (newZoom > 3) newZoom = 3;
+
+    // মাউস পজিশনে জুমিং রাখতে হবে
+    // (এইটা একটু কমপ্লেক্স কিন্তু সুন্দর ইউজার এক্সপিরিয়েন্স দিবে)
+    const mouseX = e.offsetX;
+    const zoomRatio = newZoom / zoomLevel;
+
+    // অফসেট পরিবর্তন করে মাউস পজিশন ধরে রাখা
+    offsetX = (offsetX + mouseX) * zoomRatio - mouseX;
+
+    // অফসেট সীমা চেক
+    if (offsetX < 0) offsetX = 0;
+    const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * newZoom - canvas.clientWidth);
+    if (offsetX > maxOffset) offsetX = maxOffset;
+
+    zoomLevel = newZoom;
+    drawChart();
+  }, { passive: false });
+</script>
+
+</body>
+</html>
+
       </div>
-      <div class="project">
-        <h3>Personal Blog</h3>
-        <p>A sleek, professional blog design to share thoughts, experience, and expertise with the world.</p>
+      <div class="form-section">
+        <div class="market-info-row">
+          <div class="market-dropdown" id="marketDropdown">
+            <img id="marketFlag" src="https://flagsapi.com/GB/flat/24.png" alt="gb">
+            <span id="marketName">USD/EGP (OTC)</span>
+            <span class="dropdown-arrow">&#9660;</span>
+          </div>
+          <div class="market-list" id="marketList">
+            <div class="market-list-item selected" data-flag="https://flagsapi.com/GB/flat/24.png" data-name="USD/EGP (OTC)">USD/EGP (OTC)</div>
+            <div class="market-list-item" data-flag="https://flagsapi.com/US/flat/24.png" data-name="USD/EUR (OTC)">USD/EUR (OTC)</div>
+            <div class="market-list-item" data-flag="https://flagsapi.com/JP/flat/24.png" data-name="JPY/USD (OTC)">JPY/USD (OTC)</div>
+            <div class="market-list-item" data-flag="https://flagsapi.com/CA/flat/24.png" data-name="USD/CAD (OTC)">USD/CAD (OTC)</div>
+            <div class="market-list-item" data-flag="https://flagsapi.com/IN/flat/24.png" data-name="USD/INR (OTC)">USD/INR (OTC)</div>
+          </div>
+          <span class="percent">92%</span>
+        </div>
+        <div class="form-controls">
+          <div class="timer-box">
+            <label>Timer</label>
+            <div class="timer-value" id="timerValue">00:00:05</div>
+            <div class="timer-dropdown" id="timerDropdown">
+              <div class="timer-option selected" data-value="00:00:05">00:00:05</div>
+              <div class="timer-option" data-value="00:00:10">00:00:10</div>
+              <div class="timer-option" data-value="00:00:30">00:00:30</div>
+              <div class="timer-option" data-value="00:01:00">00:01:00</div>
+              <div class="timer-option" data-value="00:02:00">00:02:00</div>
+              <div class="timer-option" data-value="00:05:00">00:05:00</div>
+            </div>
+          </div>
+          <div class="investment-box">
+            <label>Investment</label>
+            <!-- Amount input for selecting investment -->
+            <div class="investment-amount-input">
+              <label for="amountInput" style="margin:0;">$</label>
+              <input type="number" id="amountInput" min="1" max="10000" step="1" value="100" />
+            </div>
+          </div>
+        </div>
+        <div class="investment-row">
+          <span>Investment: <span class="amount" id="currentInvestment">100.00 $</span></span>
+          <span>Payout: <span class="payout" id="currentPayout">192.00 $</span></span>
+        </div>
+        <div class="action-row">
+          <button class="down-btn">Down</button>
+          <button class="up-btn">Up</button>
+        </div>
       </div>
-      <div class="project">
-        <h3>Portfolio Website</h3>
-        <p>My professional portfolio showcasing my work, skills, and projects.</p>
-      </div>
-      <div class="project">
-        <h3>Company Landing Page</h3>
-        <p>Modern, clean landing page to effectively promote company products and services.</p>
-      </div>
-      <div class="project">
-        <h3>Social Media App UI</h3>
-        <p>Interactive, user-friendly UI design for a social networking mobile app.</p>
-      </div>
-      <div class="project">
-        <h3>Online Learning Platform</h3>
-        <p>Responsive e-learning website offering courses with intuitive navigation and smooth UX.</p>
-      </div>
-      <div class="project">
-        <h3>Restaurant Website</h3>
-        <p>Attractive and easy-to-navigate site for showcasing menus and booking tables online.</p>
-      </div>
-      <div class="project">
-        <h3>Travel Blog</h3>
-        <p>Engaging travel stories and guides with beautiful photo galleries and map integration.</p>
-      </div>
-      <div class="project">
-        <h3>Photography Portfolio</h3>
-        <p>Visual showcase of professional photography work with sleek galleries and contact forms.</p>
-      </div>
-      <div class="project">
-        <h3>Event Management Site</h3>
-        <p>Platform for managing events, registrations, and providing event details effectively.</p>
-      </div>
-      <div class="project">
-        <h3>Fitness Tracker App UI</h3>
-        <p>Design focused on intuitive user experience for tracking workouts and health stats.</p>
-      </div>
-      <div class="project">
-        <h3>Real Estate Website</h3>
-        <p>Responsive website with search filters and property listings for real estate agencies.</p>
-      </div>
-      <div class="project">
-        <h3>Non-profit Organization Site</h3>
-        <p>Informative website with donation integration and volunteer sign-up forms.</p>
-      </div>
-      <div class="project">
-        <h3>Portfolio Blog</h3>
-        <p>Combination of portfolio and blog to share projects and personal insights.</p>
-      </div>
-      <div class="project">
-        <h3>Tech Startup Website</h3>
-        <p>Modern website design for a tech startup with product showcases and team introductions.</p>
+      <!-- Bottom Navigation Bar -->
+      <div class="bottom-nav">
+        <!-- Chart Icon -->
+        <div class="nav-btn active">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="14" width="3" height="7" rx="1.5" fill="#fff"/>
+            <rect x="8.5" y="8" width="3" height="13" rx="1.5" fill="#fff"/>
+            <rect x="14" y="3" width="3" height="18" rx="1.5" fill="#fff"/>
+          </svg>
+        </div>
+        <!-- Question Icon -->
+        <div class="nav-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" fill="#fff" opacity="0.25"/>
+            <text x="12" y="17" text-anchor="middle" font-size="14" fill="#fff" font-family="Arial" font-weight="bold">?</text>
+          </svg>
+        </div>
+        <!-- User Icon -->
+        <div class="nav-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8.5" r="4" fill="#fff" opacity="0.35"/>
+            <rect x="6" y="14" width="12" height="6" rx="3" fill="#fff" opacity="0.35"/>
+          </svg>
+        </div>
+        <!-- Trophy Icon with Notification -->
+        <div class="nav-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 5h14v5a7 7 0 1 1-14 0V5z" stroke="#fff" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="17" r="2" fill="#fff" opacity="0.50"/>
+          </svg>
+          <span class="notif-dot">4</span>
+        </div>
+        <!-- More Icon -->
+        <div class="nav-btn">
+          <svg viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="10" width="4" height="4" rx="2" fill="#fff" opacity="0.2"/>
+            <rect x="10" y="10" width="4" height="4" rx="2" fill="#fff" opacity="0.2"/>
+            <rect x="16" y="10" width="4" height="4" rx="2" fill="#fff" opacity="0.2"/>
+          </svg>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
+  <script>
+    // Market Dropdown
+    const marketDropdown = document.getElementById('marketDropdown');
+    const marketList = document.getElementById('marketList');
+    const marketFlag = document.getElementById('marketFlag');
+    const marketName = document.getElementById('marketName');
+    const marketItems = Array.from(document.getElementsByClassName('market-list-item'));
+    document.body.addEventListener('click', function(e) {
+      if (!marketDropdown.contains(e.target) && !marketList.contains(e.target)) {
+        marketList.classList.remove('open');
+      }
+    });
+    marketDropdown.addEventListener('click', function(e) {
+      marketList.classList.toggle('open');
+    });
+    marketItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        marketItems.forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        marketFlag.src = item.getAttribute('data-flag');
+        marketName.textContent = item.getAttribute('data-name');
+        marketList.classList.remove('open');
+      });
+    });
 
-  <section class="section">
-    <h2>Contact</h2>
-    <div class="contact-info">
-      <div class="contact-item" onclick="window.location.href='mailto:youremail@example.com'">
-        <i class="fa-solid fa-envelope"></i>
-        <span>youremail@example.com</span>
-      </div>
-      <div class="contact-item" onclick="window.open('tel:+880123456789')">
-        <i class="fa-solid fa-phone"></i>
-        <span>+880 123456789</span>
-      </div>
-      <div class="contact-item" onclick="window.open('https://t.me/yourtelegramusername', '_blank')">
-        <i class="fa-brands fa-telegram"></i>
-        <span>Telegram</span>
-      </div>
-    </div>
+    // Timer Dropdown
+    const timerValue = document.getElementById('timerValue');
+    const timerDropdown = document.getElementById('timerDropdown');
+    const timerOptions = Array.from(document.getElementsByClassName('timer-option'));
+    timerValue.addEventListener('click', function(e) {
+      timerDropdown.classList.toggle('open');
+    });
+    document.body.addEventListener('click', function(e) {
+      if (!timerValue.contains(e.target) && !timerDropdown.contains(e.target)) {
+        timerDropdown.classList.remove('open');
+      }
+    });
+    timerOptions.forEach(option => {
+      option.addEventListener('click', function(e) {
+        timerOptions.forEach(i => i.classList.remove('selected'));
+        option.classList.add('selected');
+        timerValue.textContent = option.getAttribute('data-value');
+        timerDropdown.classList.remove('open');
+      });
+    });
 
-    <div class="social-links" aria-label="Social Media Links">
-      <a href="https://www.youtube.com/channel/yourchannel" target="_blank" title="YouTube">
-        <i class="fa-brands fa-youtube"></i>
-      </a>
-      <a href="https://www.tiktok.com/@yourtiktokusername" target="_blank" title="TikTok">
-        <i class="fa-brands fa-tiktok"></i>
-      </a>
-    </div>
-  </section>
-</div>
-
-<footer>
-  <p>&copy; 2025 Success Story. All rights reserved.</p>
-</footer>
-
+    // Investment Input
+    const amountInput = document.getElementById('amountInput');
+    const currentInvestment = document.getElementById('currentInvestment');
+    const currentPayout = document.getElementById('currentPayout');
+    // Update Investment & Payout live (example: payout = investment * 1.92)
+    amountInput.addEventListener('input', function() {
+      let value = Number(amountInput.value);
+      if (value < 1) value = 1;
+      if (value > 10000) value = 10000;
+      currentInvestment.textContent = value.toFixed(2) + " $";
+      currentPayout.textContent = (value * 1.92).toFixed(2) + " $";
+    });
+  </script>
 </body>
 </html>
