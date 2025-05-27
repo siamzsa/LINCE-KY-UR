@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Binary Trading Platform - Snow UI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
+    /* আগের মতোই সব স্টাইল থাকবে */
     * {
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -69,7 +70,8 @@
     .deposit-btn:hover {
       background: #00b248;
     }
-    .market-area {
+    /* Market Area and Selector both share same space */
+    .market-area, .market-selector, .leaderboard {
       background: linear-gradient(to top, #f1fafe, #dbeeff);
       height: 520px;
       margin: 14px;
@@ -77,11 +79,36 @@
       overflow: hidden;
       border: 1px solid #cfd8dc;
       position: relative;
+      display: none; /* default hide */
+    }
+    .market-area.active, .market-selector.active, .leaderboard.active {
+      display: block;
     }
     .market-area iframe {
       width: 100%;
       height: 100%;
       border: none;
+    }
+    .market-selector ul {
+      list-style: none;
+      padding: 20px;
+      margin: 0;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+    .market-selector li {
+      background: #ffffff;
+      margin-bottom: 10px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #cfd8dc;
+      cursor: pointer;
+      font-weight: 600;
+      color: #00796b;
+      transition: background 0.2s ease;
+    }
+    .market-selector li:hover {
+      background: #e0f2f1;
     }
     .form-section {
       flex: 1;
@@ -158,6 +185,7 @@
       font-size: 12px;
       color: #455a64;
       opacity: 0.8;
+      cursor: pointer;
     }
     .nav-btn svg {
       width: 24px;
@@ -168,6 +196,24 @@
       opacity: 1;
       color: #00796b;
     }
+
+    /* লিডারবোর্ড টেবিল স্টাইল */
+    .leaderboard table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .leaderboard th, .leaderboard td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #cfd8dc;
+      font-weight: 600;
+      color: #00796b;
+    }
+    .leaderboard th {
+      background: #b3e5fc;
+      border-radius: 10px 10px 0 0;
+    }
+
     @media (max-width: 480px) {
       .mobile-frame {
         width: 100vw;
@@ -188,13 +234,48 @@
       <button class="deposit-btn">Deposit</button>
     </div>
 
-    <div class="market-area">
-      <!-- লাইভ মার্কেট চার্ট (TradingView) -->
+    <!-- Market Chart View -->
+    <div class="market-area active" id="marketArea">
       <iframe
+        id="marketFrame"
         src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features="
         allowfullscreen
         loading="lazy"
       ></iframe>
+    </div>
+
+    <!-- Market Selector View -->
+    <div class="market-selector" id="marketSelector">
+      <ul>
+        <li data-symbol="FX:EURUSD">EUR/USD</li>
+        <li data-symbol="FX:GBPUSD">GBP/USD</li>
+        <li data-symbol="FX:USDJPY">USD/JPY</li>
+        <li data-symbol="FX:AUDUSD">AUD/USD</li>
+        <li data-symbol="FX:USDCAD">USD/CAD</li>
+        <li data-symbol="FX:USDCHF">USD/CHF</li>
+        <li data-symbol="FX:NZDUSD">NZD/USD</li>
+        <!-- তোমার পছন্দমতো আরও মার্কেট অ্যাড করতে পারো -->
+      </ul>
+    </div>
+
+    <!-- Leaderboard View -->
+    <div class="leaderboard" id="leaderboard">
+      <table>
+        <thead>
+          <tr>
+            <th>র‍্যাঙ্ক</th>
+            <th>ট্রেডার</th>
+            <th>ব্যালেন্স</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>সাকসেস ট্রেডার</td><td>$15,000</td></tr>
+          <tr><td>2</td><td>ট্রেডিং এক্সপার্ট</td><td>$12,500</td></tr>
+          <tr><td>3</td><td>প্রফিট মাস্টার</td><td>$11,800</td></tr>
+          <tr><td>4</td><td>বিনিয়োগকারী</td><td>$10,900</td></tr>
+          <tr><td>5</td><td>নতুন ট্রেডার</td><td>$10,000</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <div class="form-section">
@@ -213,19 +294,89 @@
     </div>
 
     <div class="bottom-nav">
-      <div class="nav-btn active">
+      <div class="nav-btn active" id="navHome">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         <span>Home</span>
       </div>
-      <div class="nav-btn">
+      <div class="nav-btn" id="navMarkets">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 3.6 3 6.4 8 11.6 5-5.2 8-8 8-11.6 0-3.9-3.1-7-7-7z"/></svg>
         <span>Markets</span>
       </div>
-      <div class="nav-btn">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-3.33 0-8 1.67-8 5v1h16v-1c0-3.33-4.67-5-8-5z"/></svg>
+      <div class="nav-btn" id="navLeaderboard">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/></svg>
+        <span>Leaderboard</span>
+      </div>
+      <div class="nav-btn" id="navProfile">
+        <svg fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.3 5.3-5 6-5s6 1.7 6 5"/></svg>
         <span>Profile</span>
       </div>
     </div>
   </div>
+
+  <script>
+    // নেভিগেশন বাটনের সাথে ভিউ সুইচিং
+    const navHome = document.getElementById('navHome');
+    const navMarkets = document.getElementById('navMarkets');
+    const navLeaderboard = document.getElementById('navLeaderboard');
+    const navProfile = document.getElementById('navProfile');
+
+    const marketArea = document.getElementById('marketArea');
+    const marketSelector = document.getElementById('marketSelector');
+    const leaderboard = document.getElementById('leaderboard');
+    const formSection = document.querySelector('.form-section');
+
+    function clearActive() {
+      navHome.classList.remove('active');
+      navMarkets.classList.remove('active');
+      navLeaderboard.classList.remove('active');
+      navProfile.classList.remove('active');
+      marketArea.classList.remove('active');
+      marketSelector.classList.remove('active');
+      leaderboard.classList.remove('active');
+      formSection.style.display = 'none';
+    }
+
+    navHome.addEventListener('click', () => {
+      clearActive();
+      navHome.classList.add('active');
+      marketArea.classList.add('active');
+      formSection.style.display = 'flex';
+    });
+
+    navMarkets.addEventListener('click', () => {
+      clearActive();
+      navMarkets.classList.add('active');
+      marketSelector.classList.add('active');
+    });
+
+    navLeaderboard.addEventListener('click', () => {
+      clearActive();
+      navLeaderboard.classList.add('active');
+      leaderboard.classList.add('active');
+    });
+
+    navProfile.addEventListener('click', () => {
+      clearActive();
+      navProfile.classList.add('active');
+      // প্রোফাইল এর UI বা ভিউ যোগ করতে চাইলে এখানে করতে পারো
+      alert('Profile section is under construction.');
+    });
+
+    // মার্কেট সিলেক্টর থেকে মার্কেট সিলেকশন
+    const marketListItems = document.querySelectorAll('#marketSelector li');
+    const marketFrame = document.getElementById('marketFrame');
+
+    marketListItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const symbol = item.getAttribute('data-symbol');
+        marketFrame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=${symbol}&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features=`;
+        // মার্কেট ভিউতে ফিরে যাও
+        clearActive();
+        navHome.classList.add('active');
+        marketArea.classList.add('active');
+        formSection.style.display = 'flex';
+      });
+    });
+  </script>
 </body>
 </html>
