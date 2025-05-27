@@ -409,318 +409,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ক্যান্ডেল চার্ট টাইমফ্রেম সিলেক্টরসহ</title>
+  <title>লাইভ মার্কেট ট্রেনিং</title>
   <style>
-    body {
-      background-color: #121212;
-      margin: 0;
+    body, html {
+      margin: 0; padding: 0;
+      background: transparent;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      user-select: none;
+      height: 100vh; /* পুরো ভিউপোর্টের উচ্চতা */
     }
-    #container {
-      position: relative;
-      width: 90vw;
-      max-width: 900px;
-    }
-    canvas {
-      background-color: #1e1e1e;
+    .chart-container {
+      width: 600px;    /* আপনি চাইলে এই সাইজ পরিবর্তন করতে পারেন */
+      height: 350px;   /* ফ্রেম উচ্চতা */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      width: 100%;
-      height: 400px;
-      display: block;
-      cursor: grab;
-    }
-    canvas:active {
-      cursor: grabbing;
-    }
-    /* টাইমফ্রেম সিলেক্টর স্টাইল */
-    #timeframeSelector {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #272727;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.8);
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      width: 80px;
-      text-align: center;
-      padding: 8px 0;
-      user-select: none;
-      z-index: 10;
-    }
-    #timeframeOptions {
-      position: absolute;
-      top: 40px;
-      right: 0;
-      background: #272727;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.8);
       overflow: hidden;
-      display: none;
-      width: 80px;
-      z-index: 20;
     }
-    #timeframeOptions div {
-      padding: 8px 0;
-      cursor: pointer;
-      border-top: 1px solid #444;
-      user-select: none;
-      font-size: 14px;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      border-radius: 10px;
     }
-    #timeframeOptions div:first-child {
-      border-top: none;
-    }
-    #timeframeOptions div:hover {
-      background: #444;
+    /* Responsive করতে চাইলে */
+    @media (max-width: 640px) {
+      .chart-container {
+        width: 100%;
+        height: 300px;
+        border-radius: 0;
+      }
     }
   </style>
 </head>
 <body>
 
-<div id="container">
-  <canvas id="chartCanvas"></canvas>
-
-  <div id="timeframeSelector">5s</div>
-  <div id="timeframeOptions">
-    <div data-duration="5">5s</div>
-    <div data-duration="30">30s</div>
-    <div data-duration="60">1</div>
-    <div data-duration="300">5</div>
-    <div data-duration="1800">30</div>
+  <div class="chart-container">
+    <iframe
+      src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features="
+      allowfullscreen
+      scrolling="no"
+      loading="lazy"
+    ></iframe>
   </div>
-</div>
-
-<script>
-  const canvas = document.getElementById('chartCanvas');
-  const ctx = canvas.getContext('2d');
-  const container = document.getElementById('container');
-
-  const timeframeSelector = document.getElementById('timeframeSelector');
-  const timeframeOptions = document.getElementById('timeframeOptions');
-
-  function resize() {
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = canvas.clientWidth * dpr;
-    canvas.height = canvas.clientHeight * dpr;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-  }
-
-  resize();
-  window.addEventListener('resize', () => {
-    resize();
-    drawChart();
-  });
-
-  const candleBaseWidth = 40;
-  const candleSpacing = 10;
-  const maxPrice = 150;
-  const minPrice = 50;
-  const priceRange = maxPrice - minPrice;
-
-  let zoomLevel = 1;
-  let offsetX = 0;
-  let isDragging = false;
-  let dragStartX = 0;
-  let dragStartOffsetX = 0;
-
-  // টাইমফ্রেম (সেকেন্ডে)
-  let candleDuration = 5; // ডিফল্ট ৫ সেকেন্ড
-
-  // price থেকে y pos ক্যালকুলেশন
-  function priceToY(price, height) {
-    const scaleFactor = 1.5;
-    return ((maxPrice - price) / priceRange) * height * scaleFactor;
-  }
-
-  const candles = [];
-
-  let currentCandle = {
-    open: 100,
-    high: 100,
-    low: 100,
-    close: 100,
-    startTime: Date.now()
-  };
-
-  function finalizeCurrentCandle() {
-    candles.push({ ...currentCandle });
-    if (candles.length > 100) candles.shift();
-    const lastClose = currentCandle.close;
-    currentCandle = {
-      open: lastClose,
-      high: lastClose,
-      low: lastClose,
-      close: lastClose,
-      startTime: Date.now()
-    };
-  }
-
-  function updateCurrentCandle() {
-    const now = Date.now();
-    const elapsed = (now - currentCandle.startTime) / 1000;
-
-    if (elapsed < candleDuration) {
-      // মুভমেন্ট স্পিড টাইমফ্রেমের সাথে সামঞ্জস্য করে কমানো
-      // যত বেশি ডিউরেশন, তত কম মুভমেন্ট (অল্প ডিউরেশনে মুভ বেশি)
-      // নিচে নিচু মান দিলাম যেন আরও ধীরে মুভমেন্ট হয়
-      const baseSpeed = 0.12;
-      // দীর্ঘ সময় হলে স্পিড কমে যাবে, কম হলে বেশি
-      const movementSpeedFactor = baseSpeed * (5 / candleDuration);
-      
-      let movement = currentCandle.close;
-      const maxAmplitude = 20;
-
-      let randomStep = (Math.random() - 0.5) * maxAmplitude * movementSpeedFactor;
-
-      movement += randomStep;
-
-      movement = Math.min(Math.max(movement, minPrice), maxPrice);
-
-      currentCandle.close = movement;
-      if (movement > currentCandle.high) currentCandle.high = movement;
-      if (movement < currentCandle.low) currentCandle.low = movement;
-    } else {
-      finalizeCurrentCandle();
-    }
-  }
-
-  function drawChart() {
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
-    ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = '#1e1e1e';
-    ctx.fillRect(0, 0, width, height);
-
-    const bottomPadding = 20;
-    let x = -offsetX;
-    const candleWidth = candleBaseWidth * zoomLevel;
-    const totalCandleWidth = candleWidth + candleSpacing;
-
-    const drawSingleCandle = (c) => {
-      const openY = priceToY(c.open, height - bottomPadding);
-      const closeY = priceToY(c.close, height - bottomPadding);
-      const highY = priceToY(c.high, height - bottomPadding);
-      const lowY = priceToY(c.low, height - bottomPadding);
-      const color = c.close >= c.open ? '#4caf50' : '#f44336';
-
-      // Wick
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(x + candleWidth / 2, highY);
-      ctx.lineTo(x + candleWidth / 2, lowY);
-      ctx.stroke();
-
-      // Body
-      ctx.fillStyle = color;
-      const bodyTop = Math.min(openY, closeY);
-      const bodyHeight = Math.max(1, Math.abs(closeY - openY));
-      ctx.fillRect(x, bodyTop, candleWidth, bodyHeight);
-    };
-
-    for (let i = 0; i < candles.length; i++) {
-      drawSingleCandle(candles[i]);
-      x += totalCandleWidth;
-    }
-
-    drawSingleCandle(currentCandle);
-  }
-
-  function update() {
-    updateCurrentCandle();
-    drawChart();
-    requestAnimationFrame(update);
-  }
-
-  update();
-
-  // ড্র্যাগ হ্যান্ডলার
-  canvas.addEventListener('mousedown', e => {
-    isDragging = true;
-    dragStartX = e.clientX;
-    dragStartOffsetX = offsetX;
-  });
-
-  window.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-
-  window.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    const dx = e.clientX - dragStartX;
-    offsetX = dragStartOffsetX - dx;
-    if (offsetX < 0) offsetX = 0;
-
-    const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * zoomLevel - canvas.clientWidth);
-    if (offsetX > maxOffset) offsetX = maxOffset;
-    drawChart();
-  });
-
-  // Zoom হ্যান্ডলার
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    const wheel = e.deltaY < 0 ? 1 : -1;
-    const zoomStep = 0.1;
-    let newZoom = zoomLevel + wheel * zoomStep;
-    if (newZoom < 0.5) newZoom = 0.5;
-    if (newZoom > 3) newZoom = 3;
-
-    const mouseX = e.offsetX;
-    const zoomRatio = newZoom / zoomLevel;
-    offsetX = (offsetX + mouseX) * zoomRatio - mouseX;
-
-    if (offsetX < 0) offsetX = 0;
-    const maxOffset = Math.max(0, (candleBaseWidth + candleSpacing) * candles.length * newZoom - canvas.clientWidth);
-    if (offsetX > maxOffset) offsetX = maxOffset;
-
-    zoomLevel = newZoom;
-    drawChart();
-  }, { passive: false });
-
-  // টাইমফ্রেম সিলেক্টর লজিক
-  timeframeSelector.addEventListener('click', () => {
-    timeframeOptions.style.display = timeframeOptions.style.display === 'block' ? 'none' : 'block';
-  });
-
-  // অপশন সিলেক্ট করলে ডিউরেশন পরিবর্তন হবে
-  timeframeOptions.querySelectorAll('div').forEach(option => {
-    option.addEventListener('click', () => {
-      const newDuration = parseInt(option.getAttribute('data-duration'), 10);
-      if (newDuration && newDuration !== candleDuration) {
-        candleDuration = newDuration;
-        currentCandle.startTime = Date.now();
-        currentCandle.open = currentCandle.close;
-        currentCandle.high = currentCandle.close;
-        currentCandle.low = currentCandle.close;
-      }
-      // selector এর টেক্সট আপডেট
-      timeframeSelector.textContent = option.textContent;
-
-      // অপশন লুকিয়ে দাও
-      timeframeOptions.style.display = 'none';
-    });
-  });
-
-  // ক্লিক এরিয়া বাইরের ক্লিক করলে অপশন লুকিয়ে দেওয়া
-  window.addEventListener('click', (e) => {
-    if (!container.contains(e.target)) {
-      timeframeOptions.style.display = 'none';
-    }
-  });
-</script>
 
 </body>
 </html>
-
       </div>
       <div class="form-section">
         <div class="market-info-row">
