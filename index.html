@@ -1,12 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Binary Trading Platform - Mobile Frame</title>
-  <meta name="viewport" content="width=400, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Binary Trading Platform - Snow UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
     body {
-      background: #222;
+      background: linear-gradient(to bottom right, #e0f7ff, #cfd8dc);
       height: 100vh;
       margin: 0;
       display: flex;
@@ -15,49 +19,23 @@
     }
     .mobile-frame {
       width: 420px;
-      height: 920px;
-      background: #000;
+      height: 900px;
+      background: linear-gradient(to bottom, #f5fafd, #e0f0f6);
       border-radius: 38px;
-      box-shadow: 0 10px 40px 0 #000c, 0 0 0 8px #222;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 8px #cfd8dc;
       position: relative;
       overflow: hidden;
-      border: 2px solid #444;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .notch {
-      position: absolute;
-      width: 85px;
-      height: 30px;
-      background: #222;
-      top: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-radius: 0 0 20px 20px;
-      z-index: 10;
-      box-shadow: 0 2px 8px #1116;
-    }
-    .binary-container {
-      width: 400px;
-      height: 866px;
-      background: #161b22;
-      color: #fff;
-      border-radius: 28px;
-      overflow: hidden;
-      font-family: 'Inter', Arial, sans-serif;
-      position: relative;
-      margin: auto;
-      box-shadow: 0 8px 28px 0 #0008;
+      border: 2px solid #d0e3ef;
       display: flex;
       flex-direction: column;
     }
-    .binary-header {
+    .header {
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 18px 16px 10px 16px;
-      background: #181d24;
+      background: #e8f4fa;
+      border-bottom: 1px solid #d6e4ea;
     }
     .header-left {
       display: flex;
@@ -65,534 +43,189 @@
       gap: 10px;
     }
     .demo-label {
-      background: #232830;
-      color: #ffb74d;
-      font-weight: 700;
+      background: #b3e5fc;
+      color: #01579b;
+      padding: 4px 10px;
       border-radius: 4px;
-      padding: 2px 8px;
+      font-weight: bold;
       font-size: 13px;
     }
     .balance {
-      font-weight: 700;
-      margin-left: 10px;
-      font-size: 17px;
-    }
-    .dropdown-icon {
-      margin: 0 6px;
-      font-size: 13px;
-    }
-    .notif-badge {
-      background: #ff5656;
-      color: #fff;
-      border-radius: 50%;
-      padding: 2px 7px;
-      font-size: 13px;
-      margin-left: 6px;
+      font-weight: bold;
+      color: #00796b;
+      font-size: 18px;
     }
     .deposit-btn {
-      background: #1ddb66;
+      background: #00c853;
       color: #fff;
       border: none;
+      padding: 8px 18px;
       border-radius: 8px;
-      padding: 6px 18px;
-      font-weight: 600;
       font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.3s ease;
     }
     .deposit-btn:hover {
-      background: #17c35a;
+      background: #00b248;
     }
     .market-area {
-      width: 100%;
-      height: 420px;
-      background: #151922;
-      margin-top: 4px;
-      border-radius: 5px;
+      background: linear-gradient(to top, #f1fafe, #dbeeff);
+      height: 520px;
+      margin: 14px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #cfd8dc;
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #333;
-      font-size: 15px;
-      letter-spacing: 1px;
-      user-select: none;
+    }
+    .market-area iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
     .form-section {
-      padding: 22px 18px 0 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      background: #181d24;
-      height: 390px;
-      border-top: 1px solid #20242c;
       flex: 1;
-    }
-    .market-info-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-    }
-    .market-dropdown {
-      position: relative;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-size: 18px;
-      font-weight: 600;
-      gap: 6px;
-      z-index: 10;
-    }
-    .market-dropdown img {
-      vertical-align: text-bottom;
-      margin-right: 4px;
-      border-radius: 2px;
-      border: 1px solid #232830;
-      width: 24px;
-      height: 16px;
-    }
-    .market-dropdown .dropdown-arrow {
-      font-size: 12px;
-      margin-left: 4px;
-      transition: transform 0.2s;
-    }
-    .market-list {
-      display: none;
-      position: absolute;
-      top: 38px;
-      left: 0;
-      min-width: 210px;
-      background: #232830;
-      border-radius: 7px;
-      box-shadow: 0 4px 25px 0 #0006;
-      overflow: hidden;
-      border: 1px solid #232830;
-      z-index: 100;
-    }
-    .market-list.open {
-      display: block;
-      animation: fadeIn 0.2s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-    .market-list-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 14px;
-      cursor: pointer;
-      color: #fff;
-      font-size: 17px;
-    }
-    .market-list-item:hover, .market-list-item.selected {
-      background: #1ddb66;
-      color: #222;
-    }
-    .percent {
-      background: #232830;
-      color: #ffb74d;
-      font-weight: 600;
-      border-radius: 5px;
-      padding: 2px 10px;
-      font-size: 15px;
-    }
-    .form-controls {
-      display: flex;
-      justify-content: space-between;
-      gap: 18px;
-      margin-top: 10px;
-    }
-    .timer-box, .investment-box {
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      position: relative;
+      gap: 14px;
+      background: #f4fbfe;
+      border-top: 1px solid #d6e4ea;
     }
-    .timer-box label, .investment-box label {
-      font-size: 14px;
-      color: #aaa;
-    }
-    .timer-value {
-      background: #22252b;
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 18px;
-      font-weight: 500;
-      margin-top: 2px;
-      color: #fff;
-      min-width: 80px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-    }
-    .investment-amount-input {
-      margin-top: 8px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-    }
-    .investment-amount-input input,
-    .investment-amount-input select {
-      background: #22252b;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #fff;
-      padding: 7px 14px;
-      font-size: 17px;
-      width: 110px;
-      text-align: right;
-      outline: none;
-      transition: border 0.2s;
-    }
-    .investment-amount-input input:focus,
-    .investment-amount-input select:focus {
-      border: 1.5px solid #1ddb66;
-    }
-    .investment-amount-input label {
-      font-size: 16px;
-      color: #bbb;
-      margin-right: 5px;
-    }
-    .timer-dropdown {
-      display: none;
-      position: absolute;
-      top: 44px;
-      left: 0;
-      min-width: 110px;
-      background: #232830;
-      border-radius: 7px;
-      box-shadow: 0 4px 25px 0 #0006;
-      overflow: hidden;
-      border: 1px solid #232830;
-      z-index: 50;
-      animation: fadeIn 0.2s;
-    }
-    .timer-dropdown.open {
-      display: block;
-    }
-    .timer-option {
-      padding: 10px 14px;
-      cursor: pointer;
-      color: #fff;
-      font-size: 16px;
-      text-align: center;
-    }
-    .timer-option:hover, .timer-option.selected {
-      background: #1ddb66;
-      color: #222;
-    }
-    .investment-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-    .amount, .payout {
-      color: #1ddb66;
-      font-weight: 600;
-      font-size: 18px;
-    }
-    .action-row {
+    .form-row {
       display: flex;
       justify-content: space-between;
-      margin-top: 18px;
-      gap: 16px;
+      align-items: center;
     }
-    .down-btn {
-      background: #ff6c47;
-      color: #fff;
-      border: none;
+    .form-row label {
+      font-size: 15px;
+      color: #607d8b;
+    }
+    .form-row input {
+      background: #ffffff;
+      border: 1px solid #cfd8dc;
       border-radius: 8px;
-      padding: 16px 0;
-      width: 48%;
-      font-size: 19px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 8px 14px;
+      font-size: 16px;
+      width: 130px;
+      color: #37474f;
     }
-    .down-btn:hover {
-      background: #e65b35;
+    .form-row input:focus {
+      border: 1.5px solid #29b6f6;
+      outline: none;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    .up-btn, .down-btn {
+      width: 48%;
+      padding: 14px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
     .up-btn {
-      background: #1ddb66;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 16px 0;
-      width: 48%;
-      font-size: 19px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
+      background: #26a69a;
     }
     .up-btn:hover {
-      background: #17c35a;
+      background: #2bbbad;
     }
-
-    /* Bottom Navigation Bar */
+    .down-btn {
+      background: #ef5350;
+    }
+    .down-btn:hover {
+      background: #e53935;
+    }
     .bottom-nav {
-      width: 100%;
-      height: 62px;
-      background: #22232c;
-      position: absolute;
-      left: 0;
-      bottom: 0;
+      height: 60px;
+      background: #d7ecf5;
+      border-top: 1px solid #cfd8dc;
       display: flex;
-      align-items: center;
       justify-content: space-around;
-      box-shadow: 0 -2px 10px #0006;
-      z-index: 99;
+      align-items: center;
+      box-shadow: 0 -2px 10px #b0bec5;
     }
     .nav-btn {
+      display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      display: flex;
-      position: relative;
-      width: 48px;
-      height: 48px;
-      cursor: pointer;
-      opacity: 0.78;
+      font-size: 12px;
+      color: #455a64;
+      opacity: 0.8;
+    }
+    .nav-btn svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
     }
     .nav-btn.active {
       opacity: 1;
+      color: #00796b;
     }
-    .nav-btn svg {
-      width: 27px;
-      height: 27px;
-      display: block;
-    }
-    .nav-btn .notif-dot {
-      position: absolute;
-      top: 1px;
-      right: 7px;
-      background: #23aaff;
-      color: #fff;
-      font-size: 13px;
-      font-weight: bold;
-      border-radius: 100%;
-      width: 22px;
-      height: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2.5px solid #22232c;
-      box-shadow: 0 2px 8px #2226;
-    }
-    @media (max-width: 500px) {
-      .mobile-frame { width: 100vw; height: 100vh; min-width: 0; min-height: 0; border-radius: 0; }
-      .binary-container { width: 100vw; height: 100vh; border-radius: 0; }
-      .notch { left: 50%; }
+    @media (max-width: 480px) {
+      .mobile-frame {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
     }
   </style>
 </head>
 <body>
   <div class="mobile-frame">
-    <div class="notch"></div>
-    <div class="binary-container">
-      <div class="binary-header">
-        <div class="header-left">
-          <span class="demo-label">DEMO</span>
-          <span class="balance">$13,673.58</span>
-          <span class="dropdown-icon">&#9660;</span>
-          <span class="notif-badge">10</span>
-        </div>
-        <button class="deposit-btn">Deposit</button>
+    <div class="header">
+      <div class="header-left">
+        <span class="demo-label">DEMO</span>
+        <span class="balance">$10,000.00</span>
       </div>
-      <div class="market-area">
-        <!DOCTYPE html>
-<html lang="bn">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>লাইভ মার্কেট ট্রেনিং</title>
-  <style>
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      background: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    iframe {
-      width: 900px;    /* বড় চওড়া */
-      height: 600px;   /* বড় উচ্চতা */
-      border: none;
-      border-radius: 12px;
-      box-shadow: 0 6px 18px rgba(31, 59, 139, 0.35);
-    }
-    @media (max-width: 950px) {
-      iframe {
-        width: 100%;
-        height: 450px;
-        border-radius: 0;
-      }
-    }
-  </style>
-</head>
-<body>
+      <button class="deposit-btn">Deposit</button>
+    </div>
 
-  <iframe
-    src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features="
-    allowfullscreen
-    loading="lazy"
-  ></iframe>
+    <div class="market-area">
+      <!-- লাইভ মার্কেট চার্ট (TradingView) -->
+      <iframe
+        src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features="
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+    </div>
 
-</body>
-</html>
+    <div class="form-section">
+      <div class="form-row">
+        <label>Investment ($)</label>
+        <input type="number" placeholder="100" />
       </div>
-      <div class="form-section">
-        <div class="market-info-row">
-          <div class="market-dropdown" id="marketDropdown">
-            <img id="marketFlag" src="https://flagsapi.com/GB/flat/24.png" alt="gb">
-            <span id="marketName">USD/EGP (OTC)</span>
-            <span class="dropdown-arrow">&#9660;</span>
-          </div>
-          <div class="market-list" id="marketList">
-            <div class="market-list-item selected" data-flag="https://flagsapi.com/GB/flat/24.png" data-name="USD/EGP (OTC)">USD/EGP (OTC)</div>
-            <div class="market-list-item" data-flag="https://flagsapi.com/US/flat/24.png" data-name="USD/EUR (OTC)">USD/EUR (OTC)</div>
-            <div class="market-list-item" data-flag="https://flagsapi.com/JP/flat/24.png" data-name="JPY/USD (OTC)">JPY/USD (OTC)</div>
-            <div class="market-list-item" data-flag="https://flagsapi.com/CA/flat/24.png" data-name="USD/CAD (OTC)">USD/CAD (OTC)</div>
-            <div class="market-list-item" data-flag="https://flagsapi.com/IN/flat/24.png" data-name="USD/INR (OTC)">USD/INR (OTC)</div>
-          </div>
-          <span class="percent">92%</span>
-        </div>
-        <div class="form-controls">
-          <div class="timer-box">
-            <label>Timer</label>
-            <div class="timer-value" id="timerValue">00:00:05</div>
-            <div class="timer-dropdown" id="timerDropdown">
-              <div class="timer-option selected" data-value="00:00:05">00:00:05</div>
-              <div class="timer-option" data-value="00:00:10">00:00:10</div>
-              <div class="timer-option" data-value="00:00:30">00:00:30</div>
-              <div class="timer-option" data-value="00:01:00">00:01:00</div>
-              <div class="timer-option" data-value="00:02:00">00:02:00</div>
-              <div class="timer-option" data-value="00:05:00">00:05:00</div>
-            </div>
-          </div>
-          <div class="investment-box">
-            <label>Investment</label>
-            <!-- Amount input for selecting investment -->
-            <div class="investment-amount-input">
-              <label for="amountInput" style="margin:0;">$</label>
-              <input type="number" id="amountInput" min="1" max="10000" step="1" value="100" />
-            </div>
-          </div>
-        </div>
-        <div class="investment-row">
-          <span>Investment: <span class="amount" id="currentInvestment">100.00 $</span></span>
-          <span>Payout: <span class="payout" id="currentPayout">192.00 $</span></span>
-        </div>
-        <div class="action-row">
-          <button class="down-btn">Down</button>
-          <button class="up-btn">Up</button>
-        </div>
+      <div class="form-row">
+        <label>Timer (sec)</label>
+        <input type="number" placeholder="60" />
       </div>
-      <!-- Bottom Navigation Bar -->
-      <div class="bottom-nav">
-        <!-- Chart Icon -->
-        <div class="nav-btn active">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="14" width="3" height="7" rx="1.5" fill="#fff"/>
-            <rect x="8.5" y="8" width="3" height="13" rx="1.5" fill="#fff"/>
-            <rect x="14" y="3" width="3" height="18" rx="1.5" fill="#fff"/>
-          </svg>
-        </div>
-        <!-- Question Icon -->
-        <div class="nav-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" fill="#fff" opacity="0.25"/>
-            <text x="12" y="17" text-anchor="middle" font-size="14" fill="#fff" font-family="Arial" font-weight="bold">?</text>
-          </svg>
-        </div>
-        <!-- User Icon -->
-        <div class="nav-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="8.5" r="4" fill="#fff" opacity="0.35"/>
-            <rect x="6" y="14" width="12" height="6" rx="3" fill="#fff" opacity="0.35"/>
-          </svg>
-        </div>
-        <!-- Trophy Icon with Notification -->
-        <div class="nav-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M5 5h14v5a7 7 0 1 1-14 0V5z" stroke="#fff" stroke-width="2" fill="none"/>
-            <circle cx="12" cy="17" r="2" fill="#fff" opacity="0.50"/>
-          </svg>
-          <span class="notif-dot">4</span>
-        </div>
-        <!-- More Icon -->
-        <div class="nav-btn">
-          <svg viewBox="0 0 24 24" fill="none">
-            <rect x="4" y="10" width="4" height="4" rx="2" fill="#fff" opacity="0.2"/>
-            <rect x="10" y="10" width="4" height="4" rx="2" fill="#fff" opacity="0.2"/>
-            <rect x="16" y="10" width="4" height="4" rx="2" fill="#fff" opacity="0.2"/>
-          </svg>
-        </div>
+      <div class="action-buttons">
+        <button class="up-btn">UP</button>
+        <button class="down-btn">DOWN</button>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <div class="nav-btn active">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-btn">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 3.6 3 6.4 8 11.6 5-5.2 8-8 8-11.6 0-3.9-3.1-7-7-7z"/></svg>
+        <span>Markets</span>
+      </div>
+      <div class="nav-btn">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-3.33 0-8 1.67-8 5v1h16v-1c0-3.33-4.67-5-8-5z"/></svg>
+        <span>Profile</span>
       </div>
     </div>
   </div>
-  <script>
-    // Market Dropdown
-    const marketDropdown = document.getElementById('marketDropdown');
-    const marketList = document.getElementById('marketList');
-    const marketFlag = document.getElementById('marketFlag');
-    const marketName = document.getElementById('marketName');
-    const marketItems = Array.from(document.getElementsByClassName('market-list-item'));
-    document.body.addEventListener('click', function(e) {
-      if (!marketDropdown.contains(e.target) && !marketList.contains(e.target)) {
-        marketList.classList.remove('open');
-      }
-    });
-    marketDropdown.addEventListener('click', function(e) {
-      marketList.classList.toggle('open');
-    });
-    marketItems.forEach(item => {
-      item.addEventListener('click', function(e) {
-        marketItems.forEach(i => i.classList.remove('selected'));
-        item.classList.add('selected');
-        marketFlag.src = item.getAttribute('data-flag');
-        marketName.textContent = item.getAttribute('data-name');
-        marketList.classList.remove('open');
-      });
-    });
-
-    // Timer Dropdown
-    const timerValue = document.getElementById('timerValue');
-    const timerDropdown = document.getElementById('timerDropdown');
-    const timerOptions = Array.from(document.getElementsByClassName('timer-option'));
-    timerValue.addEventListener('click', function(e) {
-      timerDropdown.classList.toggle('open');
-    });
-    document.body.addEventListener('click', function(e) {
-      if (!timerValue.contains(e.target) && !timerDropdown.contains(e.target)) {
-        timerDropdown.classList.remove('open');
-      }
-    });
-    timerOptions.forEach(option => {
-      option.addEventListener('click', function(e) {
-        timerOptions.forEach(i => i.classList.remove('selected'));
-        option.classList.add('selected');
-        timerValue.textContent = option.getAttribute('data-value');
-        timerDropdown.classList.remove('open');
-      });
-    });
-
-    // Investment Input
-    const amountInput = document.getElementById('amountInput');
-    const currentInvestment = document.getElementById('currentInvestment');
-    const currentPayout = document.getElementById('currentPayout');
-    // Update Investment & Payout live (example: payout = investment * 1.92)
-    amountInput.addEventListener('input', function() {
-      let value = Number(amountInput.value);
-      if (value < 1) value = 1;
-      if (value > 10000) value = 10000;
-      currentInvestment.textContent = value.toFixed(2) + " $";
-      currentPayout.textContent = (value * 1.92).toFixed(2) + " $";
-    });
-  </script>
 </body>
 </html>
