@@ -412,32 +412,23 @@
   <title>লাইভ মার্কেট ট্রেনিং</title>
   <style>
     body, html {
-      margin: 0; padding: 0;
-      background: transparent;
+      margin: 0; padding: 0; height: 100%;
+      background: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh; /* পুরো ভিউপোর্টের উচ্চতা */
-    }
-    .chart-container {
-      width: 600px;    /* আপনি চাইলে এই সাইজ পরিবর্তন করতে পারেন */
-      height: 350px;   /* ফ্রেম উচ্চতা */
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      border-radius: 10px;
-      overflow: hidden;
     }
     iframe {
-      width: 100%;
-      height: 100%;
+      width: 900px;    /* বড় চওড়া */
+      height: 600px;   /* বড় উচ্চতা */
       border: none;
-      display: block;
-      border-radius: 10px;
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(31, 59, 139, 0.35);
     }
-    /* Responsive করতে চাইলে */
-    @media (max-width: 640px) {
-      .chart-container {
+    @media (max-width: 950px) {
+      iframe {
         width: 100%;
-        height: 300px;
+        height: 450px;
         border-radius: 0;
       }
     }
@@ -445,14 +436,11 @@
 </head>
 <body>
 
-  <div class="chart-container">
-    <iframe
-      src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features="
-      allowfullscreen
-      scrolling="no"
-      loading="lazy"
-    ></iframe>
-  </div>
+  <iframe
+    src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features="
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
 
 </body>
 </html>
