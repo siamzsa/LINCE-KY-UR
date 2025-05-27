@@ -5,7 +5,6 @@
   <title>Binary Trading Platform - Snow UI</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
-    /* আগের মতোই সব স্টাইল থাকবে */
     * {
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -70,7 +69,6 @@
     .deposit-btn:hover {
       background: #00b248;
     }
-    /* Market Area and Selector both share same space */
     .market-area, .market-selector, .leaderboard {
       background: linear-gradient(to top, #f1fafe, #dbeeff);
       height: 520px;
@@ -79,7 +77,7 @@
       overflow: hidden;
       border: 1px solid #cfd8dc;
       position: relative;
-      display: none; /* default hide */
+      display: none;
     }
     .market-area.active, .market-selector.active, .leaderboard.active {
       display: block;
@@ -186,6 +184,7 @@
       color: #455a64;
       opacity: 0.8;
       cursor: pointer;
+      user-select: none;
     }
     .nav-btn svg {
       width: 24px;
@@ -229,9 +228,9 @@
     <div class="header">
       <div class="header-left">
         <span class="demo-label">DEMO</span>
-        <span class="balance">$10,000.00</span>
+        <span class="balance" id="balanceDisplay">$10,000.00</span>
       </div>
-      <button class="deposit-btn">Deposit</button>
+      <button class="deposit-btn" id="depositBtn">Deposit</button>
     </div>
 
     <!-- Market Chart View -->
@@ -254,7 +253,7 @@
         <li data-symbol="FX:USDCAD">USD/CAD</li>
         <li data-symbol="FX:USDCHF">USD/CHF</li>
         <li data-symbol="FX:NZDUSD">NZD/USD</li>
-        <!-- তোমার পছন্দমতো আরও মার্কেট অ্যাড করতে পারো -->
+        <li data-symbol="FX:EURGBP">EUR/GBP</li>
       </ul>
     </div>
 
@@ -272,111 +271,175 @@
           <tr><td>1</td><td>সাকসেস ট্রেডার</td><td>$15,000</td></tr>
           <tr><td>2</td><td>ট্রেডিং এক্সপার্ট</td><td>$12,500</td></tr>
           <tr><td>3</td><td>প্রফিট মাস্টার</td><td>$11,800</td></tr>
-          <tr><td>4</td><td>বিনিয়োগকারী</td><td>$10,900</td></tr>
+          <tr><td>4</td><td>বিনিয়োগ গুরু</td><td>$10,700</td></tr>
           <tr><td>5</td><td>নতুন ট্রেডার</td><td>$10,000</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="form-section">
+    <!-- Trade Form -->
+    <div class="form-section" id="formSection">
       <div class="form-row">
-        <label>Investment ($)</label>
-        <input type="number" placeholder="100" />
+        <label for="investment">ইনভেস্টমেন্ট (USD):</label>
+        <input type="number" id="investment" min="1" step="1" value="100" />
       </div>
       <div class="form-row">
-        <label>Timer (sec)</label>
-        <input type="number" placeholder="60" />
+        <label for="timeframe">টাইমফ্রেম (মিনিট):</label>
+        <input type="number" id="timeframe" min="1" max="60" step="1" value="5" />
       </div>
       <div class="action-buttons">
-        <button class="up-btn">UP</button>
-        <button class="down-btn">DOWN</button>
+        <button class="up-btn" id="upBtn">UP</button>
+        <button class="down-btn" id="downBtn">DOWN</button>
       </div>
     </div>
 
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
       <div class="nav-btn active" id="navHome">
         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        <span>Home</span>
+        <span>হোম</span>
       </div>
       <div class="nav-btn" id="navMarkets">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 3.6 3 6.4 8 11.6 5-5.2 8-8 8-11.6 0-3.9-3.1-7-7-7z"/></svg>
-        <span>Markets</span>
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 6h16v2H4zm0 5h10v2H4zm0 5h7v2H4z"/></svg>
+        <span>মার্কেটস</span>
       </div>
       <div class="nav-btn" id="navLeaderboard">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/></svg>
-        <span>Leaderboard</span>
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm-3 6h6v-2H9v2zm-6 6h18v-2H3v2z"/></svg>
+        <span>লিডারবোর্ড</span>
       </div>
       <div class="nav-btn" id="navProfile">
-        <svg fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 20c0-3.3 5.3-5 6-5s6 1.7 6 5"/></svg>
-        <span>Profile</span>
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-3 0-8 1.5-8 4.5V21h16v-2.5c0-3-5-4.5-8-4.5z"/></svg>
+        <span>প্রোফাইল</span>
       </div>
     </div>
   </div>
 
-  <script>
-    // নেভিগেশন বাটনের সাথে ভিউ সুইচিং
-    const navHome = document.getElementById('navHome');
-    const navMarkets = document.getElementById('navMarkets');
-    const navLeaderboard = document.getElementById('navLeaderboard');
-    const navProfile = document.getElementById('navProfile');
+<script>
+  // ব্যালেন্স ম্যানেজমেন্ট
+  let balance = 10000.00;
+  const balanceDisplay = document.getElementById('balanceDisplay');
+  const investmentInput = document.getElementById('investment');
+  const timeframeInput = document.getElementById('timeframe');
+  const upBtn = document.getElementById('upBtn');
+  const downBtn = document.getElementById('downBtn');
+  const depositBtn = document.getElementById('depositBtn');
 
-    const marketArea = document.getElementById('marketArea');
-    const marketSelector = document.getElementById('marketSelector');
-    const leaderboard = document.getElementById('leaderboard');
-    const formSection = document.querySelector('.form-section');
+  function updateBalanceDisplay() {
+    balanceDisplay.textContent = '$' + balance.toFixed(2);
+  }
 
-    function clearActive() {
-      navHome.classList.remove('active');
-      navMarkets.classList.remove('active');
-      navLeaderboard.classList.remove('active');
-      navProfile.classList.remove('active');
-      marketArea.classList.remove('active');
-      marketSelector.classList.remove('active');
-      leaderboard.classList.remove('active');
-      formSection.style.display = 'none';
+  // ডিপোজিট বাটন: কনসেপ্ট হিসেবে ইনভেস্টমেন্ট বাড়াবে
+  depositBtn.addEventListener('click', () => {
+    let dep = prompt('Deposit amount in USD:', '500');
+    if (dep !== null) {
+      let amount = parseFloat(dep);
+      if (!isNaN(amount) && amount > 0) {
+        balance += amount;
+        updateBalanceDisplay();
+        alert('Successfully deposited $' + amount.toFixed(2));
+      } else {
+        alert('Please enter a valid amount!');
+      }
+    }
+  });
+
+  // ট্রেড করার ফাংশন
+  function placeTrade(direction) {
+    let invest = parseFloat(investmentInput.value);
+    if (isNaN(invest) || invest <= 0) {
+      alert('Please enter a valid investment amount!');
+      return;
+    }
+    if (invest > balance) {
+      alert('Insufficient balance!');
+      return;
     }
 
-    navHome.addEventListener('click', () => {
-      clearActive();
-      navHome.classList.add('active');
-      marketArea.classList.add('active');
-      formSection.style.display = 'flex';
-    });
+    // ব্যালেন্স থেকে ইনভেস্টমেন্ট কমানো
+    balance -= invest;
+    updateBalanceDisplay();
 
-    navMarkets.addEventListener('click', () => {
-      clearActive();
-      navMarkets.classList.add('active');
-      marketSelector.classList.add('active');
-    });
+    // সিম্পল রেজাল্ট জেনারেশন (৫০% চ্যান্স প্রফিট)
+    // বাস্তবে এখানে মার্কেট ও টাইমফ্রেম অনুযায়ী সিগন্যাল দেওয়া হবে
+    setTimeout(() => {
+      let won = Math.random() < 0.5; // ৫০% সম্ভাবনা জিতে যাওয়ার
+      if (won) {
+        // 80% লাভ
+        let profit = invest * 0.8;
+        balance += invest + profit; // ইনভেস্টমেন্ট + লাভ যোগ করা
+        alert(`Congrats! You won the trade (${direction}). Profit: $${profit.toFixed(2)}`);
+      } else {
+        alert(`Sorry, you lost the trade (${direction}).`);
+      }
+      updateBalanceDisplay();
+    }, (timeframeInput.value || 5) * 1000); // সেকেন্ড হিসেবে টাইমফ্রেম (ডেমো জন্য দ্রুত)
+  }
 
-    navLeaderboard.addEventListener('click', () => {
-      clearActive();
-      navLeaderboard.classList.add('active');
-      leaderboard.classList.add('active');
-    });
+  upBtn.addEventListener('click', () => placeTrade('UP'));
+  downBtn.addEventListener('click', () => placeTrade('DOWN'));
 
-    navProfile.addEventListener('click', () => {
-      clearActive();
-      navProfile.classList.add('active');
-      // প্রোফাইল এর UI বা ভিউ যোগ করতে চাইলে এখানে করতে পারো
-      alert('Profile section is under construction.');
-    });
+  // নেভিগেশন কন্ট্রোল
+  const navHome = document.getElementById('navHome');
+  const navMarkets = document.getElementById('navMarkets');
+  const navLeaderboard = document.getElementById('navLeaderboard');
+  const navProfile = document.getElementById('navProfile');
 
-    // মার্কেট সিলেক্টর থেকে মার্কেট সিলেকশন
-    const marketListItems = document.querySelectorAll('#marketSelector li');
-    const marketFrame = document.getElementById('marketFrame');
+  const marketArea = document.getElementById('marketArea');
+  const marketSelector = document.getElementById('marketSelector');
+  const leaderboard = document.getElementById('leaderboard');
+  const formSection = document.getElementById('formSection');
 
-    marketListItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const symbol = item.getAttribute('data-symbol');
-        marketFrame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=${symbol}&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features=`;
-        // মার্কেট ভিউতে ফিরে যাও
-        clearActive();
-        navHome.classList.add('active');
-        marketArea.classList.add('active');
-        formSection.style.display = 'flex';
-      });
+  function clearActive() {
+    navHome.classList.remove('active');
+    navMarkets.classList.remove('active');
+    navLeaderboard.classList.remove('active');
+    navProfile.classList.remove('active');
+
+    marketArea.classList.remove('active');
+    marketSelector.classList.remove('active');
+    leaderboard.classList.remove('active');
+
+    formSection.style.display = 'none';
+  }
+
+  navHome.addEventListener('click', () => {
+    clearActive();
+    navHome.classList.add('active');
+    marketArea.classList.add('active');
+    formSection.style.display = 'flex';
+  });
+
+  navMarkets.addEventListener('click', () => {
+    clearActive();
+    navMarkets.classList.add('active');
+    marketSelector.classList.add('active');
+  });
+
+  navLeaderboard.addEventListener('click', () => {
+    clearActive();
+    navLeaderboard.classList.add('active');
+    leaderboard.classList.add('active');
+  });
+
+  navProfile.addEventListener('click', () => {
+    clearActive();
+    navProfile.classList.add('active');
+    alert('প্রোফাইল সেকশন বর্তমানে সক্রিয় নয়।');
+  });
+
+  // মার্কেট লিস্ট থেকে সিলেক্ট করলে চার্ট পরিবর্তন
+  document.querySelectorAll('.market-selector li').forEach(item => {
+    item.addEventListener('click', () => {
+      const symbol = item.getAttribute('data-symbol');
+      const iframe = document.getElementById('marketFrame');
+      const newSrc = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=${symbol}&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1&enabled_features=&disabled_features=`;
+      iframe.src = newSrc;
+      navHome.click();
     });
-  </script>
+  });
+
+  // প্রথমে ব্যালেন্স দেখাও
+  updateBalanceDisplay();
+</script>
 </body>
 </html>
