@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Binary Trading Platform - Snow UI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * {
       box-sizing: border-box;
@@ -11,20 +11,19 @@
     }
     body {
       margin: 0;
-      height: 100vh;
+      padding: 10px;
       background: linear-gradient(to bottom right, #e0f7ff, #cfd8dc);
+      min-height: 100vh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 10px;
+      align-items: flex-start;
     }
-    .mobile-frame {
-      width: 320px;  /* ছোট মোবাইল প্রস্থ */
-      height: 680px; /* সামঞ্জস্যপূর্ণ উচ্চতা */
+    .container {
+      width: 100%;
+      max-width: 420px; /* ফোনের জন্য ভালো ম্যাক্স প্রস্থ */
       background: linear-gradient(to bottom, #f5fafd, #e0f0f6);
-      border-radius: 30px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15), 0 0 0 6px #cfd8dc;
-      border: 2px solid #d0e3ef;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -72,7 +71,7 @@
       background: #00b248;
     }
     .market-area {
-      flex-grow: 1;
+      height: 360px;
       margin: 12px 14px 0 14px;
       border-radius: 12px;
       overflow: hidden;
@@ -176,7 +175,7 @@
   </style>
 </head>
 <body>
-  <div class="mobile-frame">
+  <div class="container">
     <div class="header">
       <div class="header-left">
         <span class="demo-label">DEMO</span>
