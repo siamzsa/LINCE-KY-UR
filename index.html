@@ -1,82 +1,81 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Binary Trading Platform - Snow UI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <style>
     * {
       box-sizing: border-box;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     body {
-      margin: 0;
-      padding: 10px;
       background: linear-gradient(to bottom right, #e0f7ff, #cfd8dc);
-      min-height: 100vh;
+      height: 100vh;
+      margin: 0;
       display: flex;
+      align-items: center;
       justify-content: center;
-      align-items: flex-start;
     }
-    .container {
-      width: 100%;
-      max-width: 420px; /* ফোনের জন্য ভালো ম্যাক্স প্রস্থ */
+    .mobile-frame {
+      width: 420px;
+      height: 900px;
       background: linear-gradient(to bottom, #f5fafd, #e0f0f6);
-      border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      border-radius: 38px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 8px #cfd8dc;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #d0e3ef;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
     .header {
-      padding: 16px 20px;
-      background: #e8f4fa;
-      border-bottom: 1px solid #d6e4ea;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 14px;
+      background: #e8f4fa;
+      border-bottom: 1px solid #d6e4ea;
     }
     .header-left {
       display: flex;
-      gap: 8px;
       align-items: center;
+      gap: 10px;
     }
     .demo-label {
       background: #b3e5fc;
       color: #01579b;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-weight: 600;
-      user-select: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 13px;
     }
     .balance {
-      font-weight: 700;
+      font-weight: bold;
       color: #00796b;
-      user-select: none;
+      font-size: 18px;
     }
     .deposit-btn {
       background: #00c853;
+      color: #fff;
       border: none;
+      padding: 8px 18px;
       border-radius: 8px;
-      color: white;
-      padding: 6px 14px;
-      font-weight: 700;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      user-select: none;
+      transition: background 0.3s ease;
     }
     .deposit-btn:hover {
       background: #00b248;
     }
     .market-area {
-      height: 360px;
-      margin: 12px 14px 0 14px;
-      border-radius: 12px;
+      background: linear-gradient(to top, #f1fafe, #dbeeff);
+      height: 520px;
+      margin: 14px;
+      border-radius: 14px;
       overflow: hidden;
       border: 1px solid #cfd8dc;
-      background: #f1fafe;
       position: relative;
     }
     .market-area iframe {
@@ -85,50 +84,51 @@
       border: none;
     }
     .form-section {
-      padding: 12px 20px 14px 20px;
-      background: #f4fbfe;
-      border-top: 1px solid #d6e4ea;
+      flex: 1;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 14px;
+      background: #f4fbfe;
+      border-top: 1px solid #d6e4ea;
     }
     .form-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 14px;
+    }
+    .form-row label {
+      font-size: 15px;
       color: #607d8b;
     }
     .form-row input {
-      width: 130px;
-      padding: 6px 10px;
-      font-size: 14px;
-      border-radius: 7px;
+      background: #ffffff;
       border: 1px solid #cfd8dc;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 16px;
+      width: 130px;
       color: #37474f;
     }
     .form-row input:focus {
+      border: 1.5px solid #29b6f6;
       outline: none;
-      border-color: #29b6f6;
-      border-width: 1.5px;
     }
     .action-buttons {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
-      margin-top: 8px;
+      margin-top: 16px;
     }
     .up-btn, .down-btn {
-      flex: 1;
-      padding: 12px 0;
-      font-weight: 700;
-      font-size: 16px;
-      border-radius: 10px;
+      width: 48%;
+      padding: 14px 0;
       border: none;
-      color: white;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
       cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s ease;
+      transition: background 0.3s ease;
     }
     .up-btn {
       background: #26a69a;
@@ -143,39 +143,43 @@
       background: #e53935;
     }
     .bottom-nav {
-      height: 54px;
+      height: 60px;
       background: #d7ecf5;
       border-top: 1px solid #cfd8dc;
       display: flex;
       justify-content: space-around;
       align-items: center;
       box-shadow: 0 -2px 10px #b0bec5;
-      font-size: 11px;
-      color: #455a64;
-      user-select: none;
     }
     .nav-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
-      opacity: 0.7;
-      cursor: pointer;
-      transition: opacity 0.3s ease;
+      font-size: 12px;
+      color: #455a64;
+      opacity: 0.8;
+    }
+    .nav-btn svg {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
     }
     .nav-btn.active {
       opacity: 1;
       color: #00796b;
     }
-    .nav-btn svg {
-      width: 20px;
-      height: 20px;
-      margin-bottom: 2px;
-      fill: currentColor;
+    @media (max-width: 480px) {
+      .mobile-frame {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="mobile-frame">
     <div class="header">
       <div class="header-left">
         <span class="demo-label">DEMO</span>
@@ -210,16 +214,16 @@
 
     <div class="bottom-nav">
       <div class="nav-btn active">
-        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        Home
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
       </div>
       <div class="nav-btn">
-        <svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 3.6 3 6.4 8 11.6 5-5.2 8-8 8-11.6 0-3.9-3.1-7-7-7z"/></svg>
-        Markets
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 3.6 3 6.4 8 11.6 5-5.2 8-8 8-11.6 0-3.9-3.1-7-7-7z"/></svg>
+        <span>Markets</span>
       </div>
       <div class="nav-btn">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-3.33 0-8 1.67-8 5v1h16v-1c0-3.33-4.67-5-8-5z"/></svg>
-        Profile
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4zm0 2c-3.33 0-8 1.67-8 5v1h16v-1c0-3.33-4.67-5-8-5z"/></svg>
+        <span>Profile</span>
       </div>
     </div>
   </div>
