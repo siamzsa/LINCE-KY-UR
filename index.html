@@ -5,14 +5,58 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SiamX Binary</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .dropdown-enter { animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  </style>
 </head>
-<body class="bg-[#0f1115] text-white font-sans min-h-screen flex flex-col">
+<body class="bg-[#0f1115] text-white font-sans min-h-screen flex flex-col justify-between">
 
   <!-- Top bar -->
   <div class="flex justify-between items-center px-4 py-2 bg-[#1c1e26] border-b border-gray-700">
-    <div class="flex items-center gap-2">
-      <span class="bg-yellow-500 text-black text-xs px-2 py-1 rounded">DEMO</span>
-      <span class="font-bold">$10,000.00</span>
+    <div class="flex items-center gap-2 relative">
+      <button id="accountToggle" class="flex items-center gap-2">
+        <span id="accountTypeLabel" class="bg-yellow-500 text-black text-xs px-2 py-1 rounded">DEMO</span>
+        <span id="accountBalance" class="font-bold">$10,000.00</span>
+        <i class="fas fa-chevron-down text-sm"></i>
+      </button>
+      <!-- Account Dropdown -->
+      <div id="accountDropdown" class="hidden absolute top-full left-0 mt-2 w-72 bg-[#1f2129] border border-gray-700 rounded shadow p-4 z-20 dropdown-enter">
+        <div class="mb-2">
+          <div class="flex justify-between items-center">
+            <div>
+              <div class="text-xs text-green-400 font-semibold">STANDARD:</div>
+              <div class="text-sm font-bold">+0% profit</div>
+            </div>
+            <i class="fas fa-paper-plane text-gray-400"></i>
+          </div>
+          <div class="text-sm mt-2">traderfx093@gmail.com</div>
+          <div class="text-xs text-gray-400">ID: 54231394</div>
+          <div class="text-xs text-gray-400 mt-1">Currency: <span class="text-white font-semibold">USD</span> <button class="bg-blue-600 text-white text-xs px-2 py-0.5 rounded ml-1">CHANGE</button></div>
+        </div>
+
+        <hr class="border-gray-600 my-2">
+
+        <div class="mb-2 cursor-pointer" onclick="selectAccount('LIVE')">
+          <div class="flex justify-between items-center">
+            <div class="text-white text-sm">Live Account</div>
+            <div class="text-white text-sm">$0.00</div>
+          </div>
+          <div class="text-xs text-gray-400">The daily limit is not set</div>
+          <button class="text-blue-400 text-xs">SET LIMIT</button>
+        </div>
+
+        <div class="mt-3 border-t border-gray-700 pt-2 cursor-pointer" onclick="selectAccount('DEMO')">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <i class="fas fa-check-circle text-blue-500"></i>
+              <div class="text-sm">Demo Account</div>
+            </div>
+            <div class="text-white text-sm">$10,000.00</div>
+          </div>
+        </div>
+      </div>
     </div>
     <button class="bg-green-500 text-white px-4 py-1 rounded">Deposit</button>
   </div>
@@ -41,7 +85,7 @@
         <!-- Market Dropdown -->
         <div id="marketDropdown" class="hidden absolute bg-[#1f2129] border border-gray-700 mt-2 w-full rounded shadow z-10">
           <ul>
-            <li onclick="selectMarket('EUR/USD', 'eu')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">EUR/USD</li>
+            <li onclick="selectMarket('EUR/USD', 'us')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">EUR/USD</li>
             <li onclick="selectMarket('GBP/JPY', 'gb')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">GBP/JPY</li>
             <li onclick="selectMarket('USD/JPY', 'jp')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">USD/JPY</li>
             <li onclick="selectMarket('AUD/USD', 'au')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">AUD/USD</li>
@@ -79,26 +123,53 @@
     </div>
   </main>
 
+  <!-- Bottom Icons -->
+  <div class="bg-[#1c1e26] border-t border-gray-800 py-2 px-4 flex justify-around items-center text-gray-400 text-xl">
+    <i class="fas fa-chart-line"></i>
+    <i class="fas fa-question-circle"></i>
+    <i class="fas fa-user"></i>
+    <i class="fas fa-trophy"></i>
+    <i class="fas fa-ellipsis-h"></i>
+  </div>
+
   <script>
-    // Toggle dropdown
+    // Market Dropdown
     document.getElementById("marketToggle").addEventListener("click", () => {
       document.getElementById("marketDropdown").classList.toggle("hidden");
     });
 
-    // Market selection with flag update
     function selectMarket(name, countryCode) {
       document.getElementById("selectedMarket").innerText = name;
       document.getElementById("flagIcon").src = `https://flagcdn.com/${countryCode}.svg`;
       document.getElementById("marketDropdown").classList.add("hidden");
     }
 
-    // Investment logic
     let investment = 12;
     function adjustInvestment(amount) {
       investment += amount;
       if (investment < 1) investment = 1;
       document.getElementById("investmentInput").value = `${investment} $`;
       document.getElementById("payoutText").innerText = `${(investment * 1.92).toFixed(2)} $`;
+    }
+
+    // Account Dropdown
+    document.getElementById("accountToggle").addEventListener("click", () => {
+      document.getElementById("accountDropdown").classList.toggle("hidden");
+    });
+
+    function selectAccount(type) {
+      if (type === 'LIVE') {
+        document.getElementById("accountTypeLabel").innerText = "LIVE";
+        document.getElementById("accountTypeLabel").classList.remove("bg-yellow-500", "text-black");
+        document.getElementById("accountTypeLabel").classList.add("bg-green-500", "text-white");
+        document.getElementById("accountBalance").innerText = "$0.00";
+      } else {
+        document.getElementById("accountTypeLabel").innerText = "DEMO";
+        document.getElementById("accountTypeLabel").classList.remove("bg-green-500", "text-white");
+        document.getElementById("accountTypeLabel").classList.add("bg-yellow-500", "text-black");
+        document.getElementById("accountBalance").innerText = "$10,000.00";
+      }
+      document.getElementById("accountDropdown").classList.add("hidden");
     }
   </script>
 
