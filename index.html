@@ -1,625 +1,106 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Binary Trading Platform - Snow UI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    body {
-      background: linear-gradient(to bottom right, #e0f7ff, #cfd8dc);
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .mobile-frame {
-      width: 420px;
-      height: 900px;
-      background: linear-gradient(to bottom, #f5fafd, #e0f0f6);
-      border-radius: 38px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 8px #cfd8dc;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      border: 2px solid #d0e3ef;
-    }
-    .header {
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #e8f4fa;
-      border-bottom: 1px solid #d6e4ea;
-    }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .demo-label {
-      background: #b3e5fc;
-      color: #01579b;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 13px;
-    }
-    .balance {
-      font-weight: bold;
-      color: #00796b;
-      font-size: 18px;
-    }
-    .deposit-btn {
-      background: #00c853;
-      color: #fff;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .market-area, .market-selector, .leaderboard, .profile-section, .history-section {
-      background: linear-gradient(to top, #f1fafe, #dbeeff);
-      height: 520px;
-      margin: 14px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid #cfd8dc;
-      display: none;
-    }
-    .market-area.active, .market-selector.active, .leaderboard.active, .profile-section.active, .history-section.active {
-      display: block;
-    }
-    .market-area iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-    .market-selector ul {
-      list-style: none;
-      padding: 20px;
-      margin: 0;
-      max-height: 480px;
-      overflow-y: auto;
-    }
-    .market-selector li {
-      background: #ffffff;
-      margin-bottom: 10px;
-      padding: 12px 16px;
-      border-radius: 10px;
-      border: 1px solid #cfd8dc;
-      cursor: pointer;
-      font-weight: 600;
-      color: #00796b;
-    }
-    .market-selector li:hover {
-      background: #e0f2f1;
-    }
-    .leaderboard table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .leaderboard th, .leaderboard td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #cfd8dc;
-      font-weight: 600;
-      color: #00796b;
-    }
-    .leaderboard th {
-      background: #b3e5fc;
-    }
-    .form-section {
-      flex: 1;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      background: #f4fbfe;
-      border-top: 1px solid #d6e4ea;
-    }
-    .form-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .form-row label {
-      font-size: 15px;
-      color: #607d8b;
-    }
-    .form-row input, .form-row select {
-      background: #ffffff;
-      border: 1px solid #cfd8dc;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 16px;
-      width: 130px;
-    }
-    .action-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 16px;
-    }
-    .up-btn, .down-btn {
-      width: 48%;
-      padding: 14px 0;
-      border: none;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #fff;
-      cursor: pointer;
-    }
-    .up-btn { background: #26a69a; }
-    .up-btn:hover { background: #2bbbad; }
-    .down-btn { background: #ef5350; }
-    .down-btn:hover { background: #e53935; }
-
-    .bottom-nav {
-      height: 60px;
-      background: #d7ecf5;
-      border-top: 1px solid #cfd8dc;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 10px #b0bec5;
-    }
-    .nav-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 12px;
-      color: #455a64;
-      cursor: pointer;
-      user-select: none;
-    }
-    .nav-btn svg {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 4px;
-    }
-    .nav-btn.active {
-      color: #00796b;
-    }
-
-    .profile-section {
-      padding: 20px;
-      text-align: center;
-    }
-    .profile-avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin: 0 auto 16px;
-      border: 2px solid #90caf9;
-    }
-    .profile-section input[type="file"] {
-      margin-bottom: 10px;
-    }
-    .profile-section input[type="text"] {
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: 1px solid #cfd8dc;
-      width: 80%;
-      margin-bottom: 12px;
-    }
-    .profile-info {
-      color: #00796b;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .profile-btn {
-      display: block;
-      margin: 6px auto;
-      padding: 8px 16px;
-      background: #00acc1;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .profile-btn:hover {
-      background: #00838f;
-    }
-
-    /* History Section Styles */
-    .history-section {
-      overflow-y: auto;
-      padding: 20px;
-    }
-    .history-section ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .history-section ul li {
-      background: #ffffff;
-      border: 1px solid #cfd8dc;
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 10px;
-      font-weight: 600;
-      color: #00796b;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .history-win {
-      color: #2e7d32; /* Green */
-      font-weight: 700;
-    }
-    .history-loss {
-      color: #c62828; /* Red */
-      font-weight: 700;
-    }
-
-    /* Timer countdown display */
-    #countdown {
-      font-weight: bold;
-      color: #00796b;
-      font-size: 18px;
-      margin-top: 10px;
-      text-align: center;
-    }
-
-    @media (max-width: 480px) {
-      .mobile-frame {
-        width: 100vw;
-        height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
-      }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SiamX Binary</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="mobile-frame">
-    <div class="header">
-      <div class="header-left">
-        <div class="demo-label">Demo</div>
-        <div class="balance" id="balanceDisplay">Balance: $1000</div>
-      </div>
-      <button class="deposit-btn" id="depositBtn">Deposit</button>
-    </div>
+<body class="bg-[#0f1115] text-white font-sans min-h-screen flex flex-col">
 
-    <!-- Market area iframe -->
-    <div class="market-area active" id="marketArea">
-      <iframe id="marketFrame" src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD" scrolling="no"></iframe>
+  <!-- Top bar -->
+  <div class="flex justify-between items-center px-4 py-2 bg-[#1c1e26] border-b border-gray-700">
+    <div class="flex items-center gap-2">
+      <span class="bg-yellow-500 text-black text-xs px-2 py-1 rounded">DEMO</span>
+      <span class="font-bold">$10,000.00</span>
     </div>
-
-    <!-- Market selector -->
-    <div class="market-selector" id="marketSelector">
-      <ul id="marketList">
-        <li data-symbol="FX:EURUSD">EUR/USD</li>
-        <li data-symbol="FX:GBPUSD">GBP/USD</li>
-        <li data-symbol="FX:USDJPY">USD/JPY</li>
-        <li data-symbol="FX:AUDUSD">AUD/USD</li>
-      </ul>
-    </div>
-
-    <!-- Leaderboard -->
-    <div class="leaderboard" id="leaderboard">
-      <table>
-        <thead>
-          <tr><th>Rank</th><th>Name</th><th>Profit</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>Trader A</td><td>$1,200</td></tr>
-          <tr><td>2</td><td>Trader B</td><td>$950</td></tr>
-          <tr><td>3</td><td>Trader C</td><td>$870</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Profile section -->
-    <div class="profile-section" id="profileSection">
-      <img src="https://via.placeholder.com/100" alt="Profile" class="profile-avatar" id="profileAvatar" />
-      <input type="file" id="profileImageInput" accept="image/*" />
-      <input type="text" id="profileNameInput" placeholder="Enter your name" />
-      <button class="profile-btn" id="saveProfileBtn">Save Profile</button>
-    </div>
-
-    <!-- History section -->
-    <div class="history-section" id="historySection">
-      <h3 style="color:#00796b; margin-bottom: 16px;">Trade History</h3>
-      <ul id="tradeHistoryList"></ul>
-    </div>
-
-    <!-- Form section -->
-    <div class="form-section" id="formSection">
-      <div class="form-row">
-        <label for="investmentAmount">Investment Amount ($):</label>
-        <input type="number" id="investmentAmount" min="1" value="10" />
-      </div>
-      <div class="form-row">
-        <label for="timerInput">Timer (minutes):</label>
-        <select id="timerInput">
-          <option value="1" selected>1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="5">5</option>
-        </select>
-      </div>
-      <div class="action-buttons">
-        <button class="up-btn" id="upBtn">Up</button>
-        <button class="down-btn" id="downBtn">Down</button>
-      </div>
-      <div id="countdown"></div>
-    </div>
-
-    <!-- Bottom navigation -->
-    <div class="bottom-nav">
-      <div class="nav-btn active" id="navHome">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        <span>Home</span>
-      </div>
-      <div class="nav-btn" id="navMarkets">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 10h4v10H4zM10 4h4v16h-4zM16 13h4v7h-4z"/></svg>
-        <span>Markets</span>
-      </div>
-      <div class="nav-btn" id="navLeaderboard">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17h2v-7H3v7zm6 0h2v-4H9v4zm6 0h2v-10h-2v10zm6 0h2v-1h-2v1z"/></svg>
-        <span>Leaderboard</span>
-      </div>
-      <div class="nav-btn" id="navProfile">
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-        <span>Profile</span>
-      </div>
-      <div class="nav-btn" id="navHistory">
-        <svg fill="currentColor" viewBox="0 0 24 24">
-          <path d="M13 3a9 9 0 1 0 8.485 11.364l-1.414-1.414A7 7 0 1 1 13 5v4l5-5-5-5v4z"/>
-        </svg>
-        <span>History</span>
-      </div>
-    </div>
+    <button class="bg-green-500 text-white px-4 py-1 rounded">Deposit</button>
   </div>
 
+  <!-- Chart & Controls -->
+  <main class="flex-1 flex flex-col justify-between max-w-md mx-auto w-full">
+
+    <!-- Chart Placeholder -->
+    <div class="bg-[#12141a] flex-1 h-[400px] flex items-center justify-center border-b border-gray-700">
+      <p class="text-gray-500">Trading Chart (Embed Here)</p>
+    </div>
+
+    <!-- Trade Controls -->
+    <div class="bg-[#1c1e26] p-4 border-t border-gray-700">
+      <!-- Market Info + Dropdown -->
+      <div class="relative mb-2">
+        <div id="marketToggle" class="flex justify-between items-center text-sm cursor-pointer">
+          <div class="flex items-center gap-2">
+            <img id="flagIcon" src="https://flagcdn.com/us.svg" class="w-4 h-4" />
+            <span id="selectedMarket">EUR/USD</span>
+            <span class="text-yellow-400 ml-1">92%</span>
+          </div>
+          <div class="text-blue-400 font-semibold">PENDING TRADE</div>
+        </div>
+
+        <!-- Market Dropdown -->
+        <div id="marketDropdown" class="hidden absolute bg-[#1f2129] border border-gray-700 mt-2 w-full rounded shadow z-10">
+          <ul>
+            <li onclick="selectMarket('EUR/USD', 'eu')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">EUR/USD</li>
+            <li onclick="selectMarket('GBP/JPY', 'gb')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">GBP/JPY</li>
+            <li onclick="selectMarket('USD/JPY', 'jp')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">USD/JPY</li>
+            <li onclick="selectMarket('AUD/USD', 'au')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">AUD/USD</li>
+            <li onclick="selectMarket('USD/CAD', 'ca')" class="px-4 py-2 hover:bg-gray-700 cursor-pointer">USD/CAD</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Time & Investment -->
+      <div class="flex justify-between items-center mb-2">
+        <div>
+          <label class="text-xs text-gray-400">Time</label>
+          <input type="text" value="22:58" class="bg-[#0f1115] px-2 py-1 rounded text-white w-20 text-center border border-gray-700" />
+        </div>
+        <div>
+          <label class="text-xs text-gray-400">Investment</label>
+          <div class="flex items-center gap-2">
+            <button onclick="adjustInvestment(-1)" class="px-2 py-1 bg-gray-700 rounded">−</button>
+            <input type="text" id="investmentInput" value="12 $" class="bg-[#0f1115] px-2 py-1 rounded text-white w-20 text-center border border-gray-700" readonly />
+            <button onclick="adjustInvestment(1)" class="px-2 py-1 bg-gray-700 rounded">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payout -->
+      <div class="text-right text-sm text-gray-400 mb-3">
+        Payout: <span class="text-white font-semibold" id="payoutText">23.04 $</span>
+      </div>
+
+      <!-- Buy/Sell Buttons -->
+      <div class="flex gap-4">
+        <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded font-bold text-lg">Down</button>
+        <button class="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded font-bold text-lg">Up</button>
+      </div>
+    </div>
+  </main>
+
   <script>
-    // Elements
-    const navHome = document.getElementById('navHome');
-    const navMarkets = document.getElementById('navMarkets');
-    const navLeaderboard = document.getElementById('navLeaderboard');
-    const navProfile = document.getElementById('navProfile');
-    const navHistory = document.getElementById('navHistory');
+    // Toggle dropdown
+    document.getElementById("marketToggle").addEventListener("click", () => {
+      document.getElementById("marketDropdown").classList.toggle("hidden");
+    });
 
-    const marketArea = document.getElementById('marketArea');
-    const marketSelector = document.getElementById('marketSelector');
-    const leaderboard = document.getElementById('leaderboard');
-    const profileSection = document.getElementById('profileSection');
-    const historySection = document.getElementById('historySection');
-    const formSection = document.getElementById('formSection');
-
-    const marketList = document.getElementById('marketList');
-    const marketFrame = document.getElementById('marketFrame');
-
-    // Balance
-    let balance = 1000;
-    const balanceDisplay = document.getElementById('balanceDisplay');
-
-    // Trade history data
-    const tradeHistory = [
-      // initial dummy history if you want
-    ];
-
-    // Clear all active classes and hide sections
-    function clearActive() {
-      [navHome, navMarkets, navLeaderboard, navProfile, navHistory].forEach(nav => nav.classList.remove('active'));
-      [marketArea, marketSelector, leaderboard, profileSection, historySection].forEach(section => section.style.display = 'none');
-      formSection.style.display = 'none';
+    // Market selection with flag update
+    function selectMarket(name, countryCode) {
+      document.getElementById("selectedMarket").innerText = name;
+      document.getElementById("flagIcon").src = `https://flagcdn.com/${countryCode}.svg`;
+      document.getElementById("marketDropdown").classList.add("hidden");
     }
 
-    // Show home with market area and form
-    function showHome() {
-      clearActive();
-      navHome.classList.add('active');
-      marketArea.style.display = 'block';
-      formSection.style.display = 'flex';
+    // Investment logic
+    let investment = 12;
+    function adjustInvestment(amount) {
+      investment += amount;
+      if (investment < 1) investment = 1;
+      document.getElementById("investmentInput").value = `${investment} $`;
+      document.getElementById("payoutText").innerText = `${(investment * 1.92).toFixed(2)} $`;
     }
-    showHome();
-
-    // Navigation listeners
-    navHome.addEventListener('click', showHome);
-
-    navMarkets.addEventListener('click', () => {
-      clearActive();
-      navMarkets.classList.add('active');
-      marketSelector.style.display = 'block';
-      formSection.style.display = 'flex';
-    });
-
-    marketList.addEventListener('click', e => {
-      if(e.target && e.target.tagName === 'LI') {
-        const symbol = e.target.getAttribute('data-symbol');
-        if(symbol) {
-          marketFrame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=${symbol}`;
-          clearActive();
-          navMarkets.classList.add('active');
-          marketArea.style.display = 'block';
-          formSection.style.display = 'flex';
-        }
-      }
-    });
-
-    navLeaderboard.addEventListener('click', () => {
-      clearActive();
-      navLeaderboard.classList.add('active');
-      leaderboard.style.display = 'block';
-      formSection.style.display = 'none';
-    });
-
-    navProfile.addEventListener('click', () => {
-      clearActive();
-      navProfile.classList.add('active');
-      profileSection.style.display = 'block';
-      formSection.style.display = 'none';
-    });
-
-    navHistory.addEventListener('click', () => {
-      clearActive();
-      navHistory.classList.add('active');
-      historySection.style.display = 'block';
-      formSection.style.display = 'none';
-      renderTradeHistory();
-    });
-
-    // Profile image preview
-    const profileAvatar = document.getElementById('profileAvatar');
-    const profileImageInput = document.getElementById('profileImageInput');
-    profileImageInput.addEventListener('change', e => {
-      const file = e.target.files[0];
-      if(file) {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          profileAvatar.src = ev.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // Save profile name
-    const profileNameInput = document.getElementById('profileNameInput');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    saveProfileBtn.addEventListener('click', () => {
-      const name = profileNameInput.value.trim();
-      if(name) {
-        alert(`Hello, ${name}! Your profile is saved.`);
-      } else {
-        alert('Please enter your name.');
-      }
-    });
-
-    // Trade Logic
-    const upBtn = document.getElementById('upBtn');
-    const downBtn = document.getElementById('downBtn');
-    const investmentAmountInput = document.getElementById('investmentAmount');
-    const timerInput = document.getElementById('timerInput');
-    const countdownDisplay = document.getElementById('countdown');
-
-    // Show balance
-    function updateBalanceDisplay() {
-      balanceDisplay.textContent = `Balance: $${balance.toFixed(2)}`;
-    }
-    updateBalanceDisplay();
-
-    // Store ongoing trade timeout and countdown interval
-    let tradeTimeout = null;
-    let countdownInterval = null;
-
-    // History list element
-    const tradeHistoryList = document.getElementById('tradeHistoryList');
-
-    // Simulate market direction randomly: "up" or "down"
-    function simulateMarketDirection() {
-      return Math.random() > 0.5 ? 'up' : 'down';
-    }
-
-    // Render trade history list
-    function renderTradeHistory() {
-      tradeHistoryList.innerHTML = '';
-      for(const trade of tradeHistory) {
-        const li = document.createElement('li');
-        li.textContent = `${trade.time} - ${trade.prediction.toUpperCase()} - ${trade.result.toUpperCase()} - $${trade.amount.toFixed(2)}`;
-        li.className = trade.result === 'win' ? 'history-win' : 'history-loss';
-        tradeHistoryList.appendChild(li);
-      }
-    }
-
-    // Start trade function
-    function startTrade(prediction) {
-      // Check if already trading
-      if(tradeTimeout) {
-        alert('Please wait for the current trade to finish.');
-        return;
-      }
-
-      const investmentAmount = parseFloat(investmentAmountInput.value);
-      if(isNaN(investmentAmount) || investmentAmount <= 0) {
-        alert('Please enter a valid investment amount.');
-        return;
-      }
-      if(investmentAmount > balance) {
-        alert('Insufficient balance.');
-        return;
-      }
-
-      // Deduct investment immediately
-      balance -= investmentAmount;
-      updateBalanceDisplay();
-
-      const timerMinutes = parseInt(timerInput.value, 10);
-      let timeLeft = timerMinutes * 60; // seconds for countdown
-
-      countdownDisplay.textContent = `Time left: ${formatTime(timeLeft)}`;
-
-      countdownInterval = setInterval(() => {
-        timeLeft--;
-        countdownDisplay.textContent = `Time left: ${formatTime(timeLeft)}`;
-        if(timeLeft <= 0) {
-          clearInterval(countdownInterval);
-        }
-      }, 1000);
-
-      // Simulate market direction after timer ends
-      tradeTimeout = setTimeout(() => {
-        const marketDirection = simulateMarketDirection();
-        const isWin = (prediction === marketDirection);
-
-        if(isWin) {
-          const profit = investmentAmount * 0.8; // 80% profit on win
-          balance += investmentAmount + profit; // return investment + profit
-          alert(`You WIN! Market went ${marketDirection.toUpperCase()}. Profit: $${profit.toFixed(2)}`);
-        } else {
-          alert(`You LOSE! Market went ${marketDirection.toUpperCase()}.`);
-        }
-
-        tradeHistory.unshift({
-          time: new Date().toLocaleString(),
-          prediction: prediction,
-          result: isWin ? 'win' : 'loss',
-          amount: investmentAmount
-        });
-
-        updateBalanceDisplay();
-        renderTradeHistory();
-
-        countdownDisplay.textContent = '';
-        tradeTimeout = null;
-      }, timerMinutes * 60 * 1000);
-    }
-
-    // Format time in mm:ss
-    function formatTime(seconds) {
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      return `${m}:${s.toString().padStart(2, '0')}`;
-    }
-
-    // Button event listeners
-    upBtn.addEventListener('click', () => startTrade('up'));
-    downBtn.addEventListener('click', () => startTrade('down'));
-
-    // Deposit button placeholder
-    const depositBtn = document.getElementById('depositBtn');
-    depositBtn.addEventListener('click', () => {
-      const depAmount = prompt('Enter deposit amount:');
-      const val = parseFloat(depAmount);
-      if(!isNaN(val) && val > 0) {
-        balance += val;
-        updateBalanceDisplay();
-        alert(`Deposited $${val.toFixed(2)}.`);
-      } else {
-        alert('Invalid deposit amount.');
-      }
-    });
   </script>
+
 </body>
 </html>
