@@ -65,7 +65,7 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .market-area, .market-selector, .leaderboard, .profile-section {
+    .market-area, .market-selector, .leaderboard, .profile-section, .history-section {
       background: linear-gradient(to top, #f1fafe, #dbeeff);
       height: 520px;
       margin: 14px;
@@ -74,7 +74,7 @@
       border: 1px solid #cfd8dc;
       display: none;
     }
-    .market-area.active, .market-selector.active, .leaderboard.active, .profile-section.active {
+    .market-area.active, .market-selector.active, .leaderboard.active, .profile-section.active, .history-section.active {
       display: block;
     }
     .market-area iframe {
@@ -134,7 +134,7 @@
       font-size: 15px;
       color: #607d8b;
     }
-    .form-row input {
+    .form-row input, .form-row select {
       background: #ffffff;
       border: 1px solid #cfd8dc;
       border-radius: 8px;
@@ -178,6 +178,7 @@
       font-size: 12px;
       color: #455a64;
       cursor: pointer;
+      user-select: none;
     }
     .nav-btn svg {
       width: 24px;
@@ -230,6 +231,46 @@
       background: #00838f;
     }
 
+    /* History Section Styles */
+    .history-section {
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .history-section ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .history-section ul li {
+      background: #ffffff;
+      border: 1px solid #cfd8dc;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      font-weight: 600;
+      color: #00796b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .history-win {
+      color: #2e7d32; /* Green */
+      font-weight: 700;
+    }
+    .history-loss {
+      color: #c62828; /* Red */
+      font-weight: 700;
+    }
+
+    /* Timer countdown display */
+    #countdown {
+      font-weight: bold;
+      color: #00796b;
+      font-size: 18px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
     @media (max-width: 480px) {
       .mobile-frame {
         width: 100vw;
@@ -244,151 +285,340 @@
   <div class="mobile-frame">
     <div class="header">
       <div class="header-left">
-        <span class="demo-label">DEMO</span>
-        <span class="balance">$10,000.00</span>
+        <div class="demo-label">Demo</div>
+        <div class="balance" id="balanceDisplay">Balance: $1000</div>
       </div>
-      <button class="deposit-btn">Deposit</button>
+      <button class="deposit-btn" id="depositBtn">Deposit</button>
     </div>
 
+    <!-- Market area iframe -->
     <div class="market-area active" id="marketArea">
-      <iframe id="marketFrame" src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1"></iframe>
+      <iframe id="marketFrame" src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD" scrolling="no"></iframe>
     </div>
 
+    <!-- Market selector -->
     <div class="market-selector" id="marketSelector">
-      <ul>
+      <ul id="marketList">
         <li data-symbol="FX:EURUSD">EUR/USD</li>
         <li data-symbol="FX:GBPUSD">GBP/USD</li>
         <li data-symbol="FX:USDJPY">USD/JPY</li>
         <li data-symbol="FX:AUDUSD">AUD/USD</li>
-        <li data-symbol="FX:USDCAD">USD/CAD</li>
-        <li data-symbol="FX:USDCHF">USD/CHF</li>
-        <li data-symbol="FX:NZDUSD">NZD/USD</li>
       </ul>
     </div>
 
+    <!-- Leaderboard -->
     <div class="leaderboard" id="leaderboard">
       <table>
         <thead>
-          <tr><th>র‍্যাঙ্ক</th><th>ট্রেডার</th><th>ব্যালেন্স</th></tr>
+          <tr><th>Rank</th><th>Name</th><th>Profit</th></tr>
         </thead>
         <tbody>
-          <tr><td>1</td><td>সাকসেস ট্রেডার</td><td>$15,000</td></tr>
-          <tr><td>2</td><td>ট্রেডিং এক্সপার্ট</td><td>$12,500</td></tr>
-          <tr><td>3</td><td>প্রফিট মাস্টার</td><td>$11,800</td></tr>
-          <tr><td>4</td><td>বিনিয়োগকারী</td><td>$10,900</td></tr>
-          <tr><td>5</td><td>নতুন ট্রেডার</td><td>$10,000</td></tr>
+          <tr><td>1</td><td>Trader A</td><td>$1,200</td></tr>
+          <tr><td>2</td><td>Trader B</td><td>$950</td></tr>
+          <tr><td>3</td><td>Trader C</td><td>$870</td></tr>
         </tbody>
       </table>
     </div>
 
+    <!-- Profile section -->
     <div class="profile-section" id="profileSection">
-      <input type="file" accept="image/*" onchange="loadAvatar(event)">
-      <img src="https://via.placeholder.com/100" class="profile-avatar" id="avatarPreview" />
-      <div class="profile-info" id="userEmail">user@example.com</div>
-      <input type="text" placeholder="Your Name" />
-      <button class="profile-btn">Change Password</button>
-      <button class="profile-btn">Forgot Password</button>
+      <img src="https://via.placeholder.com/100" alt="Profile" class="profile-avatar" id="profileAvatar" />
+      <input type="file" id="profileImageInput" accept="image/*" />
+      <input type="text" id="profileNameInput" placeholder="Enter your name" />
+      <button class="profile-btn" id="saveProfileBtn">Save Profile</button>
     </div>
 
-    <div class="form-section">
+    <!-- History section -->
+    <div class="history-section" id="historySection">
+      <h3 style="color:#00796b; margin-bottom: 16px;">Trade History</h3>
+      <ul id="tradeHistoryList"></ul>
+    </div>
+
+    <!-- Form section -->
+    <div class="form-section" id="formSection">
       <div class="form-row">
-        <label>Investment ($)</label>
-        <input type="number" placeholder="100" />
+        <label for="investmentAmount">Investment Amount ($):</label>
+        <input type="number" id="investmentAmount" min="1" value="10" />
       </div>
       <div class="form-row">
-        <label>Timer (sec)</label>
-        <input type="number" placeholder="60" />
+        <label for="timerInput">Timer (minutes):</label>
+        <select id="timerInput">
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="5">5</option>
+        </select>
       </div>
       <div class="action-buttons">
-        <button class="up-btn">UP</button>
-        <button class="down-btn">DOWN</button>
+        <button class="up-btn" id="upBtn">Up</button>
+        <button class="down-btn" id="downBtn">Down</button>
       </div>
+      <div id="countdown"></div>
     </div>
 
+    <!-- Bottom navigation -->
     <div class="bottom-nav">
-      <div class="nav-btn active" id="navHome"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Home</span></div>
-      <div class="nav-btn" id="navMarkets"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 3.6 3 6.4 8 11.6 5-5.2 8-8 8-11.6 0-3.9-3.1-7-7-7z"/></svg><span>Markets</span></div>
-      <div class="nav-btn" id="navLeaderboard"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/></svg><span>Leaderboard</span></div>
-      <div class="nav-btn" id="navProfile"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span>Profile</span></div>
+      <div class="nav-btn active" id="navHome">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>Home</span>
+      </div>
+      <div class="nav-btn" id="navMarkets">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M4 10h4v10H4zM10 4h4v16h-4zM16 13h4v7h-4z"/></svg>
+        <span>Markets</span>
+      </div>
+      <div class="nav-btn" id="navLeaderboard">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M3 17h2v-7H3v7zm6 0h2v-4H9v4zm6 0h2v-10h-2v10zm6 0h2v-1h-2v1z"/></svg>
+        <span>Leaderboard</span>
+      </div>
+      <div class="nav-btn" id="navProfile">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>Profile</span>
+      </div>
+      <div class="nav-btn" id="navHistory">
+        <svg fill="currentColor" viewBox="0 0 24 24">
+          <path d="M13 3a9 9 0 1 0 8.485 11.364l-1.414-1.414A7 7 0 1 1 13 5v4l5-5-5-5v4z"/>
+        </svg>
+        <span>History</span>
+      </div>
     </div>
   </div>
 
   <script>
-    // Navigation buttons
+    // Elements
     const navHome = document.getElementById('navHome');
     const navMarkets = document.getElementById('navMarkets');
     const navLeaderboard = document.getElementById('navLeaderboard');
     const navProfile = document.getElementById('navProfile');
+    const navHistory = document.getElementById('navHistory');
 
     const marketArea = document.getElementById('marketArea');
     const marketSelector = document.getElementById('marketSelector');
     const leaderboard = document.getElementById('leaderboard');
     const profileSection = document.getElementById('profileSection');
+    const historySection = document.getElementById('historySection');
+    const formSection = document.getElementById('formSection');
 
-    function setActiveSection(section) {
-      marketArea.classList.remove('active');
-      marketSelector.classList.remove('active');
-      leaderboard.classList.remove('active');
-      profileSection.classList.remove('active');
+    const marketList = document.getElementById('marketList');
+    const marketFrame = document.getElementById('marketFrame');
 
-      navHome.classList.remove('active');
-      navMarkets.classList.remove('active');
-      navLeaderboard.classList.remove('active');
-      navProfile.classList.remove('active');
+    // Balance
+    let balance = 1000;
+    const balanceDisplay = document.getElementById('balanceDisplay');
 
-      switch(section) {
-        case 'home':
-          marketArea.classList.add('active');
-          navHome.classList.add('active');
-          break;
-        case 'markets':
-          marketSelector.classList.add('active');
+    // Trade history data
+    const tradeHistory = [
+      // initial dummy history if you want
+    ];
+
+    // Clear all active classes and hide sections
+    function clearActive() {
+      [navHome, navMarkets, navLeaderboard, navProfile, navHistory].forEach(nav => nav.classList.remove('active'));
+      [marketArea, marketSelector, leaderboard, profileSection, historySection].forEach(section => section.style.display = 'none');
+      formSection.style.display = 'none';
+    }
+
+    // Show home with market area and form
+    function showHome() {
+      clearActive();
+      navHome.classList.add('active');
+      marketArea.style.display = 'block';
+      formSection.style.display = 'flex';
+    }
+    showHome();
+
+    // Navigation listeners
+    navHome.addEventListener('click', showHome);
+
+    navMarkets.addEventListener('click', () => {
+      clearActive();
+      navMarkets.classList.add('active');
+      marketSelector.style.display = 'block';
+      formSection.style.display = 'flex';
+    });
+
+    marketList.addEventListener('click', e => {
+      if(e.target && e.target.tagName === 'LI') {
+        const symbol = e.target.getAttribute('data-symbol');
+        if(symbol) {
+          marketFrame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=${symbol}`;
+          clearActive();
           navMarkets.classList.add('active');
-          break;
-        case 'leaderboard':
-          leaderboard.classList.add('active');
-          navLeaderboard.classList.add('active');
-          break;
-        case 'profile':
-          profileSection.classList.add('active');
-          navProfile.classList.add('active');
-          break;
+          marketArea.style.display = 'block';
+          formSection.style.display = 'flex';
+        }
+      }
+    });
+
+    navLeaderboard.addEventListener('click', () => {
+      clearActive();
+      navLeaderboard.classList.add('active');
+      leaderboard.style.display = 'block';
+      formSection.style.display = 'none';
+    });
+
+    navProfile.addEventListener('click', () => {
+      clearActive();
+      navProfile.classList.add('active');
+      profileSection.style.display = 'block';
+      formSection.style.display = 'none';
+    });
+
+    navHistory.addEventListener('click', () => {
+      clearActive();
+      navHistory.classList.add('active');
+      historySection.style.display = 'block';
+      formSection.style.display = 'none';
+      renderTradeHistory();
+    });
+
+    // Profile image preview
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileImageInput = document.getElementById('profileImageInput');
+    profileImageInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          profileAvatar.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Save profile name
+    const profileNameInput = document.getElementById('profileNameInput');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    saveProfileBtn.addEventListener('click', () => {
+      const name = profileNameInput.value.trim();
+      if(name) {
+        alert(`Hello, ${name}! Your profile is saved.`);
+      } else {
+        alert('Please enter your name.');
+      }
+    });
+
+    // Trade Logic
+    const upBtn = document.getElementById('upBtn');
+    const downBtn = document.getElementById('downBtn');
+    const investmentAmountInput = document.getElementById('investmentAmount');
+    const timerInput = document.getElementById('timerInput');
+    const countdownDisplay = document.getElementById('countdown');
+
+    // Show balance
+    function updateBalanceDisplay() {
+      balanceDisplay.textContent = `Balance: $${balance.toFixed(2)}`;
+    }
+    updateBalanceDisplay();
+
+    // Store ongoing trade timeout and countdown interval
+    let tradeTimeout = null;
+    let countdownInterval = null;
+
+    // History list element
+    const tradeHistoryList = document.getElementById('tradeHistoryList');
+
+    // Simulate market direction randomly: "up" or "down"
+    function simulateMarketDirection() {
+      return Math.random() > 0.5 ? 'up' : 'down';
+    }
+
+    // Render trade history list
+    function renderTradeHistory() {
+      tradeHistoryList.innerHTML = '';
+      for(const trade of tradeHistory) {
+        const li = document.createElement('li');
+        li.textContent = `${trade.time} - ${trade.prediction.toUpperCase()} - ${trade.result.toUpperCase()} - $${trade.amount.toFixed(2)}`;
+        li.className = trade.result === 'win' ? 'history-win' : 'history-loss';
+        tradeHistoryList.appendChild(li);
       }
     }
 
-    navHome.addEventListener('click', () => setActiveSection('home'));
-    navMarkets.addEventListener('click', () => setActiveSection('markets'));
-    navLeaderboard.addEventListener('click', () => setActiveSection('leaderboard'));
-    navProfile.addEventListener('click', () => setActiveSection('profile'));
+    // Start trade function
+    function startTrade(prediction) {
+      // Check if already trading
+      if(tradeTimeout) {
+        alert('Please wait for the current trade to finish.');
+        return;
+      }
 
-    // Market selector update iframe
-    const marketSelectorList = marketSelector.querySelectorAll('li');
-    const marketFrame = document.getElementById('marketFrame');
+      const investmentAmount = parseFloat(investmentAmountInput.value);
+      if(isNaN(investmentAmount) || investmentAmount <= 0) {
+        alert('Please enter a valid investment amount.');
+        return;
+      }
+      if(investmentAmount > balance) {
+        alert('Insufficient balance.');
+        return;
+      }
 
-    marketSelectorList.forEach(li => {
-      li.addEventListener('click', () => {
-        const symbol = li.getAttribute('data-symbol');
-        // Update iframe src with selected symbol
-        marketFrame.src = `https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=${encodeURIComponent(symbol)}&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1`;
-        setActiveSection('home');
-      });
-    });
+      // Deduct investment immediately
+      balance -= investmentAmount;
+      updateBalanceDisplay();
 
-    // Profile avatar load preview
-    function loadAvatar(event) {
-      const avatarPreview = document.getElementById('avatarPreview');
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        avatarPreview.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
+      const timerMinutes = parseInt(timerInput.value, 10);
+      let timeLeft = timerMinutes * 60; // seconds for countdown
+
+      countdownDisplay.textContent = `Time left: ${formatTime(timeLeft)}`;
+
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        countdownDisplay.textContent = `Time left: ${formatTime(timeLeft)}`;
+        if(timeLeft <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+
+      // Simulate market direction after timer ends
+      tradeTimeout = setTimeout(() => {
+        const marketDirection = simulateMarketDirection();
+        const isWin = (prediction === marketDirection);
+
+        if(isWin) {
+          const profit = investmentAmount * 0.8; // 80% profit on win
+          balance += investmentAmount + profit; // return investment + profit
+          alert(`You WIN! Market went ${marketDirection.toUpperCase()}. Profit: $${profit.toFixed(2)}`);
+        } else {
+          alert(`You LOSE! Market went ${marketDirection.toUpperCase()}.`);
+        }
+
+        tradeHistory.unshift({
+          time: new Date().toLocaleString(),
+          prediction: prediction,
+          result: isWin ? 'win' : 'loss',
+          amount: investmentAmount
+        });
+
+        updateBalanceDisplay();
+        renderTradeHistory();
+
+        countdownDisplay.textContent = '';
+        tradeTimeout = null;
+      }, timerMinutes * 60 * 1000);
     }
 
-    // Deposit button link action
-    document.querySelector('.deposit-btn').addEventListener('click', () => {
-      window.location.href = 'https://siam9757.github.io/Deposit-Withdraw/';
+    // Format time in mm:ss
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      return `${m}:${s.toString().padStart(2, '0')}`;
+    }
+
+    // Button event listeners
+    upBtn.addEventListener('click', () => startTrade('up'));
+    downBtn.addEventListener('click', () => startTrade('down'));
+
+    // Deposit button placeholder
+    const depositBtn = document.getElementById('depositBtn');
+    depositBtn.addEventListener('click', () => {
+      const depAmount = prompt('Enter deposit amount:');
+      const val = parseFloat(depAmount);
+      if(!isNaN(val) && val > 0) {
+        balance += val;
+        updateBalanceDisplay();
+        alert(`Deposited $${val.toFixed(2)}.`);
+      } else {
+        alert('Invalid deposit amount.');
+      }
     });
   </script>
 </body>
