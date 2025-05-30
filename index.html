@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Full Mobile Trading UI</title>
+  <title>Live Trading UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <script src="https://s3.tradingview.com/tv.js"></script>
 </head>
 <body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
 
@@ -21,23 +22,23 @@
       <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
     </div>
 
-    <!-- Chart Area (Height reduced to 430px) -->
-    <div class="w-full h-[430px] bg-black flex items-center justify-center text-gray-600 text-xs italic">
-      Market Chart will appear here
+    <!-- Chart Area -->
+    <div class="w-full h-[450px] bg-black border-b border-gray-700 relative">
+      <div id="tradingview_chart" class="absolute inset-0"></div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 overflow-y-auto px-3 space-y-1 py-3 text-sm">
+    <!-- Main Controls -->
+    <div class="flex-1 overflow-y-auto px-3 space-y-3 py-4 text-sm">
 
       <!-- Market Selector -->
       <div>
         <label class="text-xs text-gray-400 mb-1 block">Market</label>
-        <select class="w-full bg-gray-800 text-white p-2 rounded">
-          <option selected>USD/BDT (OTC)</option>
-          <option>BTC/USD</option>
-          <option>ETH/USD</option>
-          <option>EUR/USD</option>
-          <option>Gold/USD</option>
+        <select id="marketSelect" class="w-full bg-gray-800 text-white p-2 rounded">
+          <option value="FX:EURUSD">EUR/USD</option>
+          <option value="BINANCE:BTCUSDT">BTC/USDT</option>
+          <option value="BINANCE:ETHUSDT">ETH/USDT</option>
+          <option value="OANDA:XAUUSD">Gold/USD</option>
+          <option value="FOREXCOM:USDJPY">USD/JPY</option>
         </select>
       </div>
 
@@ -47,7 +48,7 @@
         <select class="w-full bg-gray-800 text-white p-2 rounded">
           <option>15s</option>
           <option>30s</option>
-          <option>1m</option>
+          <option selected>1m</option>
           <option>5m</option>
         </select>
       </div>
@@ -73,10 +74,9 @@
         <button class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Down</button>
         <button class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg">Up</button>
       </div>
-
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Nav -->
     <div class="bg-[#1c1e26] border-t border-gray-800 py-2 px-4 flex justify-around items-center text-gray-400 text-xl">
       <i class="fas fa-chart-line"></i>
       <i class="fas fa-question-circle"></i>
@@ -87,7 +87,7 @@
 
   </div>
 
-  <!-- JavaScript -->
+  <!-- JavaScript Logic -->
   <script>
     const investmentInput = document.getElementById('investmentInput');
     const payoutDisplay = document.getElementById('payoutDisplay');
@@ -107,7 +107,44 @@
     }
 
     investmentInput.addEventListener('input', updatePayout);
-    window.addEventListener('DOMContentLoaded', updatePayout);
+    window.addEventListener('DOMContentLoaded', () => {
+      updatePayout();
+      loadTradingViewChart("FX:EURUSD"); // Default market
+    });
+
+    // Live Market Switching
+    const marketSelect = document.getElementById("marketSelect");
+    marketSelect.addEventListener("change", () => {
+      const selectedSymbol = marketSelect.value;
+      loadTradingViewChart(selectedSymbol);
+    });
+
+    let tvWidget = null;
+
+    function loadTradingViewChart(symbol) {
+      if (tvWidget) {
+        tvWidget.remove();
+      }
+
+      tvWidget = new TradingView.widget({
+        container_id: "tradingview_chart",
+        autosize: true,
+        symbol: symbol,
+        interval: "1",
+        timezone: "Asia/Dhaka",
+        theme: "dark",
+        style: "1",
+        locale: "bn",
+        hide_top_toolbar: true,
+        hide_legend: true,
+        hide_volume: true,
+        backgroundColor: "#000000",
+        gridColor: "#444",
+        studies: [],
+        withdateranges: true,
+        allow_symbol_change: false
+      });
+    }
   </script>
 
 </body>
