@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Full Mobile Trading UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Font Awesome Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
@@ -22,18 +21,13 @@
       <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
     </div>
 
-    <!-- Chart Area -->
-    <div class="w-full h-[350px] bg-black flex items-center justify-center text-gray-600 text-xs italic rounded-md overflow-hidden">
-      <iframe
-        src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_bbb&symbol=FX:EURUSD&interval=5&hidesidetoolbar=1&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=[]&theme=light&style=1&timezone=Asia%2FDhaka&withdateranges=1&hidevolume=0&hideideas=1"
-        class="w-full h-full"
-        allowfullscreen
-        loading="lazy"
-      ></iframe>
+    <!-- Chart Area (Height slightly reduced from 500px to 460px) -->
+    <div class="w-full h-[460px] bg-black flex items-center justify-center text-gray-600 text-xs italic">
+      Market Chart will appear here
     </div>
 
-    <!-- Scrollable Main Content -->
-    <div class="flex-1 overflow-y-auto px-3 space-y-4 py-4 text-sm">
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto px-3 space-y-1 py-3 text-sm">
 
       <!-- Market Selector -->
       <div>
@@ -75,7 +69,7 @@
       </div>
 
       <!-- Trade Buttons -->
-      <div class="flex justify-between space-x-2">
+      <div class="flex justify-between space-x-0 mt-3">
         <button class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Down</button>
         <button class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg">Up</button>
       </div>
