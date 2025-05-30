@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mobile Trading UI</title>
+  <title>Full Mobile Trading UI</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-800 text-white font-sans min-h-screen flex items-center justify-center">
+<body class="bg-gray-900 text-white font-sans min-h-screen">
 
-  <!-- MAIN FRAME (Mobile Box) -->
-  <div class="w-[360px] bg-gray-900 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
+  <!-- Fullscreen Trading UI -->
+  <div class="w-full min-h-screen flex flex-col">
 
     <!-- Header -->
-    <div class="flex justify-between items-center bg-gray-800 p-3 border-b border-gray-700 text-sm">
+    <div class="flex justify-between items-center bg-gray-800 p-3 text-sm">
       <div class="flex items-center space-x-2">
         <div class="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded">DEMO</div>
         <div class="font-semibold">$10,000.00</div>
@@ -20,13 +20,15 @@
       <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
     </div>
 
-    <!-- Chart Area: Seamless and Taller -->
+    <!-- Chart Area -->
     <div class="w-full h-[360px] bg-black flex items-center justify-center text-gray-600 text-xs italic">
       Market Chart will appear here
     </div>
 
-    <!-- Market Selector -->
-    <div class="px-3 space-y-3 text-sm pt-3">
+    <!-- Scrollable Main Content -->
+    <div class="flex-1 overflow-y-auto px-3 space-y-4 py-4 text-sm">
+
+      <!-- Market Selector -->
       <div>
         <label class="text-xs text-gray-400 mb-1 block">Market</label>
         <select class="w-full bg-gray-800 text-white p-2 rounded">
@@ -48,10 +50,7 @@
           <option>5m</option>
         </select>
       </div>
-    </div>
 
-    <!-- Trade Controls -->
-    <div class="px-3 pt-4 pb-2 space-y-3 text-sm">
       <!-- Investment -->
       <div>
         <label class="text-gray-400 text-xs">Investment</label>
@@ -67,14 +66,14 @@
         <label class="text-gray-400 text-xs">Payout</label>
         <div id="payoutDisplay" class="font-bold text-green-400 mt-1">22.32 $</div>
       </div>
-    </div>
 
-    <!-- Trade Buttons -->
-    <div class="flex justify-between px-3 py-4 space-x-2 text-sm">
-      <button class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Down</button>
-      <button class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg">Up</button>
+      <!-- Trade Buttons -->
+      <div class="flex justify-between space-x-2">
+        <button class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Down</button>
+        <button class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg">Up</button>
+      </div>
+
     </div>
-    
   </div>
 
   <!-- JavaScript -->
