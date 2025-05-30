@@ -17,14 +17,26 @@
     <div class="flex justify-between items-center bg-gray-800 p-3 text-sm">
       <div class="flex items-center space-x-2">
         <div class="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded">DEMO</div>
-        <div class="font-semibold">$10,000.00</div>
+        <div class="font-semibold">Balance: $10,000.00</div>
       </div>
       <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
     </div>
 
-    <!-- Chart Area -->
+    <!-- Chart Area with Timeframe display only -->
     <div class="w-full h-[450px] bg-black border-b border-gray-700 relative">
-      <div id="tradingview_chart" class="absolute inset-0"></div>
+      <!-- Top-left overlay with only timeframe selector -->
+      <div class="absolute top-2 left-2 z-10 flex space-x-3 items-center">
+        <select id="timeframeSelect" class="bg-gray-800 text-white text-xs px-2 py-1 rounded">
+          <option value="1">1m</option>
+          <option value="2">2m</option>
+          <option value="3">3m</option>
+          <option value="5">5m</option>
+          <option value="15">15m</option>
+          <option value="30">30m</option>
+          <option value="60">1h</option>
+        </select>
+      </div>
+      <div id="tradingview_chart" class="absolute inset-0 z-0"></div>
     </div>
 
     <!-- Main Controls -->
@@ -42,14 +54,14 @@
         </select>
       </div>
 
-      <!-- Timeframe -->
+      <!-- Timeframe Label Only (not functional dropdown anymore here) -->
       <div>
-        <label class="text-xs text-gray-400 mb-1 block">Timeframe</label>
+        <label class="text-xs text-gray-400 mb-1 block">Investment Time</label>
         <select class="w-full bg-gray-800 text-white p-2 rounded">
-          <option>15s</option>
           <option>30s</option>
-          <option selected>1m</option>
-          <option>5m</option>
+          <option>1m</option>
+          <option>2m</option>
+          <option selected>5m</option>
         </select>
       </div>
 
@@ -107,21 +119,12 @@
     }
 
     investmentInput.addEventListener('input', updatePayout);
-    window.addEventListener('DOMContentLoaded', () => {
-      updatePayout();
-      loadTradingViewChart("FX:EURUSD"); // Default market
-    });
 
-    // Live Market Switching
-    const marketSelect = document.getElementById("marketSelect");
-    marketSelect.addEventListener("change", () => {
-      const selectedSymbol = marketSelect.value;
-      loadTradingViewChart(selectedSymbol);
-    });
-
+    let currentSymbol = "FX:EURUSD";
+    let currentInterval = "1";
     let tvWidget = null;
 
-    function loadTradingViewChart(symbol) {
+    function loadTradingViewChart(symbol, interval = "1") {
       if (tvWidget) {
         tvWidget.remove();
       }
@@ -130,7 +133,7 @@
         container_id: "tradingview_chart",
         autosize: true,
         symbol: symbol,
-        interval: "1",
+        interval: interval,
         timezone: "Asia/Dhaka",
         theme: "dark",
         style: "1",
@@ -145,6 +148,23 @@
         allow_symbol_change: false
       });
     }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updatePayout();
+      loadTradingViewChart(currentSymbol, currentInterval);
+    });
+
+    const marketSelect = document.getElementById("marketSelect");
+    marketSelect.addEventListener("change", () => {
+      currentSymbol = marketSelect.value;
+      loadTradingViewChart(currentSymbol, currentInterval);
+    });
+
+    const timeframeSelect = document.getElementById("timeframeSelect");
+    timeframeSelect.addEventListener("change", () => {
+      currentInterval = timeframeSelect.value;
+      loadTradingViewChart(currentSymbol, currentInterval);
+    });
   </script>
 
 </body>
