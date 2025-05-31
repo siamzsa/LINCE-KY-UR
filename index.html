@@ -38,6 +38,11 @@
       <div id="tradingview_chart" class="absolute inset-0 z-0"></div>
     </div>
 
+    <!-- Trade Status Bar -->
+    <div id="currentTradeStatus" class="text-center py-2 text-sm text-yellow-400 bg-gray-800 border-b border-gray-700">
+      No active trade
+    </div>
+
     <!-- History Modal -->
     <div id="historyModal" class="hidden absolute inset-0 bg-black bg-opacity-80 z-50 flex flex-col items-center p-4 overflow-y-auto">
       <div class="w-full max-w-md bg-gray-800 rounded-lg p-4">
@@ -107,7 +112,7 @@
     let currentSymbol = "FX:EURUSD";
     let currentInterval = "1";
     let tvWidget = null;
-    const profitPercent = 0.86;
+    const profitPercent = 0.81; // 5% less
     let totalTrades = 0;
 
     const balanceDisplay = document.getElementById("balanceDisplay");
@@ -116,8 +121,8 @@
 
     function updatePayout() {
       const amount = parseFloat(investmentInput.value) || 0;
-      const profit = (amount * profitPercent + amount).toFixed(2);
-      payoutDisplay.innerText = `${profit} $`;
+      const profit = (amount * profitPercent).toFixed(2);
+      payoutDisplay.innerText = `${(amount + parseFloat(profit)).toFixed(2)} $`;
     }
 
     function adjustInvestment(delta) {
@@ -133,29 +138,62 @@
 
     function placeTrade(direction) {
       const amount = parseFloat(investmentInput.value);
-      const investmentTime = parseInt(document.getElementById("investmentTime").value) * 1000;
+      const investmentTime = parseInt(document.getElementById("investmentTime").value);
+      const profit = parseFloat((amount * profitPercent).toFixed(2));
+      const totalPayout = amount + profit;
       if (amount > balance || amount <= 0) return alert("Invalid Investment");
       balance -= amount;
       updateBalanceDisplay();
 
-      const thisTradeIndex = totalTrades;
-      totalTrades++;
+      const thisTradeIndex = totalTrades++;
+      const countdownId = `countdown-${Date.now()}`;
 
-      const win = thisTradeIndex % 10 !== 9; // every 10th trade is loss
-      const profit = win ? amount * profitPercent : -amount;
+      trades.unshift({
+        countdownId,
+        direction,
+        amount,
+        time: new Date().toLocaleTimeString(),
+        result: 'Running',
+        profit: '...'
+      });
+
+      document.getElementById("currentTradeStatus").innerText = `🔄 ${currentSymbol} • ${direction.toUpperCase()} • ⏳ ${investmentTime}s`;
+      renderHistory();
+
+      let timeLeft = investmentTime;
+      const interval = setInterval(() => {
+        timeLeft--;
+        const el = document.getElementById(countdownId);
+        if (el) el.innerText = `⏳ ${timeLeft}s`;
+        if (timeLeft <= 0) clearInterval(interval);
+      }, 1000);
+
+      const win = thisTradeIndex % 10 !== 9;
+      const finalProfit = win ? profit : -amount;
 
       setTimeout(() => {
-        balance += amount + (win ? amount * profitPercent : 0);
+        balance += win ? totalPayout : 0;
         updateBalanceDisplay();
 
-        trades.unshift({ time: new Date().toLocaleTimeString(), direction, amount, result: win ? "Win" : "Loss", profit: win ? `+$${(amount * profitPercent).toFixed(2)}` : `-$${amount.toFixed(2)}` });
+        document.getElementById("currentTradeStatus").innerText = `${currentSymbol} • ${direction.toUpperCase()} • ${win ? '✅ Win' : '❌ Loss'}`;
+
+        trades[trades.findIndex(t => t.countdownId === countdownId)] = {
+          time: new Date().toLocaleTimeString(),
+          direction,
+          amount,
+          result: win ? "Win" : "Loss",
+          profit: win ? `+$${totalPayout.toFixed(2)}` : `-$${amount.toFixed(2)}`
+        };
         renderHistory();
-      }, investmentTime);
+      }, investmentTime * 1000);
     }
 
     function renderHistory() {
       const list = document.getElementById("historyList");
-      list.innerHTML = trades.map(t => `<div class="border border-gray-700 rounded p-2 flex justify-between"><div>${t.time} - ${t.direction.toUpperCase()}</div><div class="${t.result === 'Win' ? 'text-green-400' : 'text-red-400'}">${t.result} (${t.profit})</div></div>`).join("");
+      list.innerHTML = trades.map(t => `<div class="border border-gray-700 rounded p-2 flex justify-between">
+        <div>${t.time} - ${t.direction?.toUpperCase()} <span id="${t.countdownId || ''}" class="text-yellow-400"></span></div>
+        <div class="${t.result === 'Win' ? 'text-green-400' : (t.result === 'Loss' ? 'text-red-400' : 'text-yellow-400')}">${t.result} ${t.profit}</div>
+      </div>`).join("");
     }
 
     function toggleHistory() {
