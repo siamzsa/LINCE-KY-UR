@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Binary Trading Frame</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Responsive Binary Trading Frame</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .fade-in { animation: fadeIn 0.5s ease-in-out; }
@@ -12,7 +12,7 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* ডেমো বাটন আগের মতোই কমলা */
+    /* ডেমো বাটনের স্টাইল */
     .demo-bg-orange {
       background-color: #f97316; /* Tailwind orange-500 */
       padding: 0 8px;
@@ -40,7 +40,7 @@
       vertical-align: middle;
     }
 
-    /* লাইভ বাটন এবং ব্যালেন্সের জন্য সবুজ স্টাইল */
+    /* লাইভ বাটনের জন্য সবুজ স্টাইল */
     .live-bg-green {
       background-color: #22c55e; /* Tailwind green-500 */
       padding: 4px 10px;
@@ -68,12 +68,46 @@
       display: inline-block;
       vertical-align: middle;
     }
+
+    /* Responsive Container */
+    .frame-container {
+      width: 380px;
+      height: 740px;
+      max-width: 95vw;
+      max-height: 95vh;
+      background-color: #1f2937; /* Tailwind gray-800 */
+      border: 4px solid #374151; /* Tailwind gray-700 */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      /* No border-radius for sharp corners */
+    }
+
+    /* Adjust for larger screens */
+    @media(min-width: 768px) {
+      .frame-container {
+        width: 420px;
+        height: 800px;
+      }
+    }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      background: none; /* Remove any background */
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
   </style>
 </head>
-<body class="bg-gray-900 text-white font-sans flex justify-center items-center min-h-screen">
+<body>
 
-  <!-- Mobile Frame -->
-  <div class="w-[380px] h-[740px] max-w-full max-h-screen bg-gray-800 rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-700 fade-in relative flex flex-col">
+  <div class="frame-container fade-in">
 
     <!-- Top Bar -->
     <div class="bg-gray-900 p-4 flex items-center justify-between border-b border-gray-700">
@@ -174,7 +208,6 @@
 
   </div>
 
-  <!-- JS: Modal Toggle and Balance Switch -->
   <script>
     function toggleHistory() {
       const modal = document.getElementById('historyModal');
