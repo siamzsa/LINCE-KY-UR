@@ -108,6 +108,7 @@
     let currentInterval = "1";
     let tvWidget = null;
     const profitPercent = 0.86;
+    let totalTrades = 0;
 
     const balanceDisplay = document.getElementById("balanceDisplay");
     const investmentInput = document.getElementById("investmentInput");
@@ -137,7 +138,10 @@
       balance -= amount;
       updateBalanceDisplay();
 
-      const win = Math.random() > 0.5;
+      const thisTradeIndex = totalTrades;
+      totalTrades++;
+
+      const win = thisTradeIndex % 10 !== 9; // every 10th trade is loss
       const profit = win ? amount * profitPercent : -amount;
 
       setTimeout(() => {
