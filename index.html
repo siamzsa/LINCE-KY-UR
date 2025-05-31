@@ -22,9 +22,9 @@
       <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
     </div>
 
-    <!-- Chart Area with Timeframe display only -->
+    <!-- Chart Area -->
     <div class="w-full h-[450px] bg-black border-b border-gray-700 relative">
-      <!-- Top-left overlay with only timeframe selector -->
+      <!-- Timeframe Selector -->
       <div class="absolute top-2 left-2 z-10 flex space-x-3 items-center">
         <select id="timeframeSelect" class="bg-gray-800 text-white text-xs px-2 py-1 rounded">
           <option value="1">1m</option>
@@ -54,14 +54,14 @@
         </select>
       </div>
 
-      <!-- Timeframe Label Only (not functional dropdown anymore here) -->
+      <!-- Investment Time -->
       <div>
         <label class="text-xs text-gray-400 mb-1 block">Investment Time</label>
-        <select class="w-full bg-gray-800 text-white p-2 rounded">
-          <option>30s</option>
-          <option>1m</option>
-          <option>2m</option>
-          <option selected>5m</option>
+        <select class="w-full bg-gray-800 text-white p-2 rounded" id="timeSelect">
+          <option value="30s">30s</option>
+          <option value="1m">1m</option>
+          <option value="2m">2m</option>
+          <option value="5m" selected>5m</option>
         </select>
       </div>
 
@@ -96,7 +96,6 @@
       <i class="fas fa-trophy"></i>
       <i class="fas fa-ellipsis-h"></i>
     </div>
-
   </div>
 
   <!-- JavaScript Logic -->
@@ -125,9 +124,7 @@
     let tvWidget = null;
 
     function loadTradingViewChart(symbol, interval = "1") {
-      if (tvWidget) {
-        tvWidget.remove();
-      }
+      if (tvWidget) tvWidget.remove();
 
       tvWidget = new TradingView.widget({
         container_id: "tradingview_chart",
@@ -137,7 +134,7 @@
         timezone: "Asia/Dhaka",
         theme: "dark",
         style: "1",
-        locale: "bn",
+        locale: "en",
         hide_top_toolbar: true,
         hide_legend: true,
         hide_volume: true,
@@ -152,6 +149,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       updatePayout();
       loadTradingViewChart(currentSymbol, currentInterval);
+      updateBalanceDisplay();
     });
 
     const marketSelect = document.getElementById("marketSelect");
@@ -165,6 +163,69 @@
       currentInterval = timeframeSelect.value;
       loadTradingViewChart(currentSymbol, currentInterval);
     });
+
+    // Trade Execution Logic
+    let balance = 10000.00;
+    let activeTrade = null;
+
+    const balanceDisplay = document.querySelector(".font-semibold");
+    const upBtn = document.querySelector("button.bg-green-600");
+    const downBtn = document.querySelector("button.bg-red-600");
+    const timeSelect = document.getElementById("timeSelect");
+
+    function updateBalanceDisplay() {
+      balanceDisplay.innerText = `Balance: $${balance.toFixed(2)}`;
+    }
+
+    function disableTradeButtons(disable = true) {
+      upBtn.disabled = disable;
+      downBtn.disabled = disable;
+      upBtn.classList.toggle("opacity-50", disable);
+      downBtn.classList.toggle("opacity-50", disable);
+    }
+
+    function convertToMilliseconds(label) {
+      if (label.includes("s")) return parseInt(label) * 1000;
+      if (label.includes("m")) return parseInt(label) * 60 * 1000;
+      return null;
+    }
+
+    function startTrade(direction) {
+      if (activeTrade) return;
+
+      const investment = parseFloat(investmentInput.value);
+      if (investment > balance) {
+        alert("Insufficient balance");
+        return;
+      }
+
+      const duration = convertToMilliseconds(timeSelect.value);
+      if (!duration) return;
+
+      balance -= investment;
+      updateBalanceDisplay();
+      disableTradeButtons(true);
+
+      activeTrade = {
+        amount: investment,
+        direction: direction,
+        timeout: setTimeout(() => {
+          const isWin = Math.random() > 0.5;
+          const profit = isWin ? investment * profitPercent : 0;
+          const result = isWin ? "WIN" : "LOSS";
+
+          if (isWin) balance += investment + profit;
+          updateBalanceDisplay();
+          alert(`Trade ${result}: ${isWin ? "+" + profit.toFixed(2) : "-" + investment.toFixed(2)}$`);
+
+          activeTrade = null;
+          disableTradeButtons(false);
+        }, duration)
+      };
+    }
+
+    upBtn.addEventListener("click", () => startTrade("up"));
+    downBtn.addEventListener("click", () => startTrade("down"));
   </script>
 
 </body>
