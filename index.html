@@ -12,12 +12,24 @@
 
   <div class="w-full flex-1 flex flex-col">
     <!-- Header -->
-    <div class="flex justify-between items-center bg-gray-800 p-3 text-sm">
+    <div class="flex justify-between items-center bg-gray-800 p-3 text-sm relative">
       <div class="flex items-center space-x-2">
-        <div class="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded">DEMO</div>
+        <button onclick="toggleAccountType()" class="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded" id="accountTypeLabel">DEMO</button>
         <div id="balanceDisplay" class="font-semibold">Balance: $10,000.00</div>
       </div>
       <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
+    </div>
+
+    <!-- Account Switch Modal -->
+    <div id="accountModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+      <div class="bg-gray-800 p-6 rounded-lg max-w-xs w-full">
+        <h2 class="text-lg font-bold mb-4 text-center">Select Account Type</h2>
+        <div class="space-y-3">
+          <button onclick="setAccountType('demo')" class="w-full bg-yellow-400 text-black py-2 rounded font-bold">Demo Account</button>
+          <button onclick="setAccountType('live')" class="w-full bg-green-500 text-white py-2 rounded font-bold">Live Account</button>
+        </div>
+        <div class="text-center text-xs text-gray-400 mt-4" id="userIdDisplay"></div>
+      </div>
     </div>
 
     <!-- Chart Area -->
@@ -107,17 +119,34 @@
   </div>
 
   <script>
+    let accountType = 'demo';
+    let userEmail = 'user@example.com';
+    let userId = `ID-${Math.random().toString(36).substring(2, 10)}`;
+
     let balance = 10000;
     let trades = [];
     let currentSymbol = "FX:EURUSD";
     let currentInterval = "1";
     let tvWidget = null;
-    const profitPercent = 0.81; // 5% less
+    const profitPercent = 0.81;
     let totalTrades = 0;
 
     const balanceDisplay = document.getElementById("balanceDisplay");
     const investmentInput = document.getElementById("investmentInput");
     const payoutDisplay = document.getElementById("payoutDisplay");
+
+    function toggleAccountType() {
+      document.getElementById("accountModal").classList.remove("hidden");
+      document.getElementById("userIdDisplay").innerText = `User ID: ${userId}`;
+    }
+
+    function setAccountType(type) {
+      accountType = type;
+      document.getElementById("accountModal").classList.add("hidden");
+      document.getElementById("accountTypeLabel").innerText = type.toUpperCase();
+      balance = (type === 'demo') ? 10000 : 0;
+      updateBalanceDisplay();
+    }
 
     function updatePayout() {
       const amount = parseFloat(investmentInput.value) || 0;
