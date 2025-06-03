@@ -2,288 +2,322 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Live Trading UI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Binary Trading</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <script src="https://s3.tradingview.com/tv.js"></script>
+  <style>
+    /* ব্যালেন্স বক্সের max width ও overflow হ্যান্ডেল */
+    #balanceBox {
+      max-width: 160px;
+      overflow: visible; /* changed so full balance visible */
+      white-space: nowrap;
+    }
+    #balanceAmount {
+      font-size: 1rem; /* ছোট ফন্ট সাইজ */
+      max-width: none; /* পুরো টেক্সট দেখানোর জন্য */
+      overflow: visible;
+      text-overflow: unset;
+      white-space: nowrap;
+      font-weight: 700;
+      color: white;
+    }
+
+    /* ব্যালেন্স বক্সের পিছনের হালকা ফর্ম বর্ডার সরানো */
+    #balanceBox {
+      background: transparent !important;
+      border: none !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+
+    /* ডিপোজিট বাটনের নিচে বর্ডার রিমুভ */
+    .fixed.bottom-0 {
+      border-top: none !important;
+    }
+
+    /* ব্যালেন্স লেবেল ফন্ট সেটিং */
+    #balanceLabel {
+      font-weight: 600;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    /* ব্যালেন্স বক্সে ফ্লেক্স আইটেম স্পেস */
+    #balanceBox > div {
+      margin-left: 0.5rem;
+    }
+
+    /* Deposit Form Overlay */
+    #depositOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #depositForm {
+      background: #1f2937; /* Tailwind gray-800 */
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      width: 100%;
+      max-width: 400px;
+      color: white;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+    #depositForm label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    #depositForm input[type="text"],
+    #depositForm input[type="number"],
+    #depositForm input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      border: none;
+      margin-bottom: 1rem;
+      background: #374151; /* Tailwind gray-700 */
+      color: white;
+      outline: none;
+    }
+    #depositForm input[readonly] {
+      background: #6b7280; /* Tailwind gray-500 */
+      cursor: not-allowed;
+    }
+    #depositForm button {
+      width: 100%;
+      background: #fbbf24; /* yellow-400 */
+      color: black;
+      font-weight: 700;
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      border: none;
+    }
+    #depositForm button:hover {
+      background: #f59e0b; /* yellow-500 */
+    }
+    #depositCloseBtn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<body class="bg-gray-900 text-white font-sans min-h-screen flex flex-col">
+<body class="bg-gray-900 text-white font-sans">
 
-  <div class="w-full flex-1 flex flex-col">
-    <!-- Header -->
-    <div class="flex justify-between items-center bg-gray-800 p-3 text-sm relative">
-      <div class="flex items-center space-x-2">
-        <button onclick="toggleAccountType()" class="bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded" id="accountTypeLabel">DEMO</button>
-        <div id="balanceDisplay" class="font-semibold">Balance: $10,000.00</div>
-      </div>
-      <!-- Deposit button updated to redirect to your deposit page -->
-      <button onclick="goToDeposit()" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">Deposit</button>
+  <!-- Balance Bar -->
+  <div class="flex justify-between items-center px-4 py-4 bg-gray-800 shadow relative">
+    <!-- Single balance box (Demo or Live) -->
+    <div id="balanceBox" class="cursor-pointer select-none rounded px-6 py-3 flex items-center space-x-3 w-40">
+      <div id="balanceLabel" class="text-yellow-400 font-semibold text-lg">Demo</div>
+      <div id="balanceAmount">$10,000</div>
     </div>
 
-    <!-- Account Switch Modal -->
-    <div id="accountModal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-      <div class="bg-gray-800 p-6 rounded-lg max-w-xs w-full">
-        <h2 class="text-lg font-bold mb-4 text-center">Select Account Type</h2>
-        <div class="space-y-3">
-          <button onclick="setAccountType('demo')" class="w-full bg-yellow-400 text-black py-2 rounded font-bold">Demo Account</button>
-          <button onclick="setAccountType('live')" class="w-full bg-green-500 text-white py-2 rounded font-bold">Live Account</button>
+    <button id="depositBtn" class="bg-yellow-500 px-3 py-1 rounded text-black font-semibold">Deposit</button>
+
+    <!-- Balance Switch Modal -->
+    <div id="balanceModal" class="hidden absolute top-full left-0 mt-1 bg-gray-800 border-t border-gray-600 rounded-b w-36 z-50 shadow-lg">
+      <div class="p-3 space-y-2">
+        <div class="flex items-center space-x-2 cursor-pointer hover:bg-gray-700 p-1 rounded" onclick="selectBalance('demo')">
+          <input type="radio" name="balanceType" id="demoRadio" checked />
+          <label for="demoRadio" class="text-yellow-400 font-semibold text-sm">Demo Balance</label>
         </div>
-        <div class="text-center text-xs text-gray-400 mt-4" id="userIdDisplay"></div>
-      </div>
-    </div>
-
-    <!-- Chart Area -->
-    <div class="w-full h-[450px] bg-black border-b border-gray-700 relative">
-      <!-- Timeframe Select and History Button -->
-      <div class="absolute top-2 left-2 z-10 flex space-x-3 items-center">
-        <select id="timeframeSelect" class="bg-gray-800 text-white text-xs px-2 py-1 rounded">
-          <option value="1">1m</option>
-          <option value="2">2m</option>
-          <option value="3">3m</option>
-          <option value="5">5m</option>
-          <option value="15">15m</option>
-          <option value="30">30m</option>
-          <option value="60">1h</option>
-        </select>
-        <button onclick="toggleHistory()" class="bg-blue-600 hover:bg-blue-700 text-xs px-2 py-1 rounded">📜 History</button>
-      </div>
-      <div id="tradingview_chart" class="absolute inset-0 z-0"></div>
-    </div>
-
-    <!-- Trade Status Bar -->
-    <div id="currentTradeStatus" class="text-center py-2 text-sm text-yellow-400 bg-gray-800 border-b border-gray-700">
-      No active trade
-    </div>
-
-    <!-- History Modal -->
-    <div id="historyModal" class="hidden absolute inset-0 bg-black bg-opacity-80 z-50 flex flex-col items-center p-4 overflow-y-auto">
-      <div class="w-full max-w-md bg-gray-800 rounded-lg p-4">
-        <div class="flex justify-between items-center mb-2">
-          <h2 class="text-lg font-bold">Trade History</h2>
-          <button onclick="toggleHistory()" class="text-red-400">Close ✖</button>
-        </div>
-        <div id="historyList" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
-      </div>
-    </div>
-
-    <!-- Main Controls -->
-    <div class="flex-1 overflow-y-auto px-3 space-y-3 py-4 text-sm">
-      <div>
-        <label class="text-xs text-gray-400 mb-1 block">Market</label>
-        <select id="marketSelect" class="w-full bg-gray-800 text-white p-2 rounded">
-          <option value="FX:EURUSD">EUR/USD</option>
-          <option value="BINANCE:BTCUSDT">BTC/USDT</option>
-          <option value="BINANCE:ETHUSDT">ETH/USDT</option>
-          <option value="OANDA:XAUUSD">Gold/USD</option>
-          <option value="FOREXCOM:USDJPY">USD/JPY</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="text-xs text-gray-400 mb-1 block">Investment Time</label>
-        <select id="investmentTime" class="w-full bg-gray-800 text-white p-2 rounded">
-          <option value="30">30s</option>
-          <option value="60">1m</option>
-          <option value="120">2m</option>
-          <option value="300" selected>5m</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="text-gray-400 text-xs">Investment</label>
-        <div class="flex items-center space-x-2 mt-1">
-          <button onclick="adjustInvestment(-1)" class="px-2 bg-gray-700 rounded text-sm">-</button>
-          <input id="investmentInput" type="number" value="12" class="w-20 text-center bg-gray-900 border border-gray-600 rounded px-2 py-1 text-sm" />
-          <button onclick="adjustInvestment(1)" class="px-2 bg-gray-700 rounded text-sm">+</button>
+        <div class="flex items-center space-x-2 cursor-pointer hover:bg-gray-700 p-1 rounded" onclick="selectBalance('live')">
+          <input type="radio" name="balanceType" id="liveRadio" />
+          <label for="liveRadio" class="text-green-400 font-semibold text-sm">Live Balance</label>
         </div>
       </div>
-
-      <div>
-        <label class="text-gray-400 text-xs">Payout</label>
-        <div id="payoutDisplay" class="font-bold text-green-400 mt-1">22.32 $</div>
-      </div>
-
-      <div class="flex justify-between space-x-0 mt-3">
-        <button onclick="placeTrade('down')" class="w-1/2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg">Down</button>
-        <button onclick="placeTrade('up')" class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg">Up</button>
-      </div>
-    </div>
-
-    <div class="bg-[#1c1e26] border-t border-gray-800 py-2 px-4 flex justify-around items-center text-gray-400 text-xl">
-      <i class="fas fa-chart-line"></i>
-      <i class="fas fa-question-circle"></i>
-      <i class="fas fa-user"></i>
-      <i class="fas fa-trophy"></i>
-      <i class="fas fa-ellipsis-h"></i>
     </div>
   </div>
 
+  <!-- Chart Area -->
+  <div class="h-[calc(100vh-230px)] bg-black flex items-center justify-center rounded">
+    <span class="text-gray-400">[ Chart will be displayed here ]</span>
+  </div>
+
+  <!-- Trade Controls -->
+  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 px-4 py-3 border-t border-gray-600">
+
+    <!-- Row 1: Amount + Profit -->
+    <div class="flex justify-between space-x-2 mb-2 text-sm">
+      <!-- Amount -->
+      <div class="flex flex-col w-1/2">
+        <label>Amount</label>
+        <input id="amountInput" type="number" value="10" class="bg-gray-700 px-2 py-1 rounded text-sm outline-none" />
+      </div>
+
+      <!-- Profit -->
+      <div class="flex flex-col w-1/2">
+        <label>Profit (95%)</label>
+        <div id="profitDisplay" class="bg-gray-700 px-2 py-1 rounded text-sm text-green-400">$9.50</div>
+      </div>
+    </div>
+
+    <!-- Row 2: Timeframe + Market -->
+    <div class="flex justify-between space-x-2 mb-3 text-sm">
+      <!-- Timeframe -->
+      <div class="flex flex-col w-1/2">
+        <label>Timeframe</label>
+        <select class="bg-gray-700 px-2 py-1 rounded text-sm">
+          <option>1 Minute</option>
+          <option>3 Minutes</option>
+          <option>5 Minutes</option>
+        </select>
+      </div>
+
+      <!-- Market -->
+      <div class="flex flex-col w-1/2">
+        <label>Market</label>
+        <select class="bg-gray-700 px-2 py-1 rounded text-sm">
+          <option>EUR/USD</option>
+          <option>BTC/USD</option>
+          <option>GBP/USD</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Trade Buttons -->
+    <div class="flex justify-between space-x-4">
+      <button class="w-full bg-green-500 hover:bg-green-600 text-black py-3 rounded font-bold">Up</button>
+      <button class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded font-bold">Down</button>
+    </div>
+  </div>
+
+  <!-- Deposit Form Overlay -->
+  <div id="depositOverlay" class="flex">
+    <form id="depositForm" enctype="multipart/form-data">
+      <button type="button" id="depositCloseBtn" aria-label="Close Deposit Form">&times;</button>
+      <h2 class="text-xl font-bold mb-4">Deposit Funds</h2>
+      
+      <label for="binanceId">Binance ID</label>
+      <input type="text" id="binanceId" name="binanceId" value="your-binance-id-12345" readonly />
+
+      <label for="depositAmount">Amount (USD)</label>
+      <input type="number" id="depositAmount" name="depositAmount" min="1" required placeholder="Enter deposit amount" />
+
+      <label for="depositScreenshot">Upload Screenshot</label>
+      <input type="file" id="depositScreenshot" name="depositScreenshot" accept="image/*" required />
+
+      <button type="submit">Confirm Deposit</button>
+    </form>
+  </div>
+
   <script>
-    let accountType = 'demo';
-    let userEmail = 'user@example.com';
-    let userId = `ID-${Math.random().toString(36).substring(2, 10)}`;
+    const amountInput = document.getElementById("amountInput");
+    const profitDisplay = document.getElementById("profitDisplay");
+    const balanceBox = document.getElementById("balanceBox");
+    const balanceModal = document.getElementById("balanceModal");
+    const balanceLabel = document.getElementById("balanceLabel");
+    const balanceAmount = document.getElementById("balanceAmount");
+    const depositBtn = document.getElementById("depositBtn");
+    const depositOverlay = document.getElementById("depositOverlay");
+    const depositForm = document.getElementById("depositForm");
+    const depositCloseBtn = document.getElementById("depositCloseBtn");
 
-    let balance = 10000;
-    let trades = [];
-    let currentSymbol = "FX:EURUSD";
-    let currentInterval = "1";
-    let tvWidget = null;
-    const profitPercent = 0.81;
-    let totalTrades = 0;
+    // Initial balances
+    const balances = {
+      demo: 10000,
+      live: 0
+    };
 
-    const balanceDisplay = document.getElementById("balanceDisplay");
-    const investmentInput = document.getElementById("investmentInput");
-    const payoutDisplay = document.getElementById("payoutDisplay");
+    // Current selected balance type
+    let currentBalanceType = 'demo';
 
-    function toggleAccountType() {
-      document.getElementById("accountModal").classList.remove("hidden");
-      document.getElementById("userIdDisplay").innerText = `User ID: ${userId}`;
+    // Update profit on amount input
+    function updateProfit() {
+      const amount = parseFloat(amountInput.value) || 0;
+      const profit = (amount * 0.95).toFixed(2);
+      profitDisplay.textContent = `$${profit}`;
     }
+    amountInput.addEventListener("input", updateProfit);
+    updateProfit();
 
-    function setAccountType(type) {
-      accountType = type;
-      document.getElementById("accountModal").classList.add("hidden");
-      document.getElementById("accountTypeLabel").innerText = type.toUpperCase();
-      balance = (type === 'demo') ? 10000 : 0;
-      updateBalanceDisplay();
-    }
+    // Toggle modal visibility on balance box click
+    balanceBox.addEventListener("click", () => {
+      balanceModal.classList.toggle("hidden");
+    });
 
-    function updatePayout() {
-      const amount = parseFloat(investmentInput.value) || 0;
-      const profit = (amount * profitPercent).toFixed(2);
-      payoutDisplay.innerText = `${(amount + parseFloat(profit)).toFixed(2)} $`;
-    }
+    // Select balance from modal
+    function selectBalance(type) {
+      currentBalanceType = type;
+      balanceLabel.textContent = type === 'demo' ? 'Demo' : 'Live';
+      balanceLabel.className = type === 'demo' ? 'text-yellow-400 font-semibold text-lg' : 'text-green-400 font-semibold text-lg';
 
-    function adjustInvestment(delta) {
-      let val = parseFloat(investmentInput.value) || 0;
-      val = Math.max(1, val + delta);
-      investmentInput.value = val;
-      updatePayout();
-    }
-
-    function updateBalanceDisplay() {
-      balanceDisplay.innerText = `Balance: $${balance.toFixed(2)}`;
-    }
-
-    function placeTrade(direction) {
-      const amount = parseFloat(investmentInput.value);
-      const investmentTime = parseInt(document.getElementById("investmentTime").value);
-      const profit = parseFloat((amount * profitPercent).toFixed(2));
-      const totalPayout = amount + profit;
-      if (amount > balance || amount <= 0) return alert("Invalid Investment");
-      balance -= amount;
-      updateBalanceDisplay();
-
-      const thisTradeIndex = totalTrades++;
-      const countdownId = `countdown-${Date.now()}`;
-
-      trades.unshift({
-        countdownId,
-        direction,
-        amount,
-        time: new Date().toLocaleTimeString(),
-        result: 'Running',
-        profit: '...'
-      });
-
-      document.getElementById("currentTradeStatus").innerText = `🔄 ${currentSymbol} • ${direction.toUpperCase()} • ⏳ ${investmentTime}s`;
-      renderHistory();
-
-      let timeLeft = investmentTime;
-      const interval = setInterval(() => {
-        timeLeft--;
-        const el = document.getElementById(countdownId);
-        if (el) el.innerText = `⏳ ${timeLeft}s`;
-        if (timeLeft <= 0) clearInterval(interval);
-      }, 1000);
-
-      const win = thisTradeIndex % 10 !== 9;
-      const finalProfit = win ? profit : -amount;
-
-      setTimeout(() => {
-        balance += win ? totalPayout : 0;
-        updateBalanceDisplay();
-
-        document.getElementById("currentTradeStatus").innerText = `${currentSymbol} • ${direction.toUpperCase()} • ${win ? '✅ Win' : '❌ Loss'}`;
-
-        trades[trades.findIndex(t => t.countdownId === countdownId)] = {
-          time: new Date().toLocaleTimeString(),
-          countdownId,
-          direction,
-          amount,
-          result: win ? 'Win' : 'Loss',
-          profit: win ? `+${profit}` : `-${amount}`
-        };
-
-        renderHistory();
-      }, investmentTime * 1000);
-    }
-
-    function renderHistory() {
-      const historyList = document.getElementById("historyList");
-      historyList.innerHTML = trades.map(t => `
-        <div class="bg-gray-700 rounded p-2 flex justify-between text-xs">
-          <div>
-            <span>${t.time}</span>
-            <span class="ml-2 font-bold">${t.direction.toUpperCase()}</span>
-            <span class="ml-2">${t.result}</span>
-          </div>
-          <div class="${t.profit.startsWith('+') ? 'text-green-400' : (t.profit === '...' ? 'text-yellow-400' : 'text-red-400')} font-bold">
-            ${t.profit}
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function toggleHistory() {
-      const modal = document.getElementById("historyModal");
-      modal.classList.toggle("hidden");
-    }
-
-    function goToDeposit() {
-      // Redirect to your deposit page URL
-      window.location.href = "https://siamzsa.github.io/QUOTEXUPDETUI/";
-    }
-
-    // TradingView Widget Initialization
-    function initTradingView(symbol, interval) {
-      if(tvWidget) {
-        tvWidget.remove();
+      if(type === 'demo'){
+        balanceAmount.textContent = `$${balances.demo.toLocaleString('en-US')}`;
+      } else {
+        balanceAmount.textContent = `$${balances.live.toLocaleString('en-US')}`;
       }
-      tvWidget = new TradingView.widget({
-        container_id: "tradingview_chart",
-        autosize: true,
-        symbol: symbol,
-        interval: interval,
-        timezone: "Etc/UTC",
-        theme: "dark",
-        style: "1",
-        locale: "en",
-        toolbar_bg: "#f1f3f6",
-        enable_publishing: false,
-        hide_side_toolbar: false,
-        allow_symbol_change: true,
-        studies: ["MACD@tv-basicstudies"],
-      });
+      balanceModal.classList.add("hidden");
+
+      document.getElementById(type === 'demo' ? "demoRadio" : "liveRadio").checked = true;
     }
 
-    document.getElementById("marketSelect").addEventListener("change", function() {
-      currentSymbol = this.value;
-      initTradingView(currentSymbol, currentInterval);
+    // Close modal if clicked outside
+    window.addEventListener('click', function(e) {
+      if (!balanceBox.contains(e.target) && !balanceModal.contains(e.target)) {
+        balanceModal.classList.add("hidden");
+      }
     });
 
-    document.getElementById("timeframeSelect").addEventListener("change", function() {
-      currentInterval = this.value;
-      initTradingView(currentSymbol, currentInterval);
+    // Show deposit form overlay
+    depositBtn.addEventListener("click", () => {
+      depositOverlay.style.display = "flex";
     });
 
-    investmentInput.addEventListener("input", updatePayout);
+    // Close deposit form
+    depositCloseBtn.addEventListener("click", () => {
+      depositOverlay.style.display = "none";
+      depositForm.reset();
+    });
 
-    // Initial load
-    updateBalanceDisplay();
-    updatePayout();
-    initTradingView(currentSymbol, currentInterval);
+    // Handle deposit form submission
+    depositForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const binanceId = depositForm.binanceId.value;
+      const amount = depositForm.depositAmount.value;
+      const screenshot = depositForm.depositScreenshot.files[0];
+
+      if (!amount || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+      }
+      if (!screenshot) {
+        alert("Please upload a screenshot.");
+        return;
+      }
+
+      // এখানে তোমার ফরম ডাটা সার্ভারে পাঠানোর জন্য AJAX / fetch / Firebase ইত্যাদি যুক্ত করবে
+      // এখন কনসোলে শুধু ডাটা দেখানো হচ্ছে:
+
+      console.log("Deposit Request:");
+      console.log("Binance ID:", binanceId);
+      console.log("Amount:", amount);
+      console.log("Screenshot:", screenshot);
+
+      alert("Deposit request sent! Admin will confirm it soon.");
+
+      // ফর্ম রিসেট ও ফর্ম বন্ধ করা
+      depositForm.reset();
+      depositOverlay.style.display = "none";
+    });
+
+    // প্রথমে ডেমো ব্যালেন্স সিলেক্টেড থাকবে ও প্রদর্শিত হবে
+    selectBalance('demo');
   </script>
+
 </body>
 </html>
