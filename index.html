@@ -5,54 +5,57 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Binary Trading</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
   <style>
-    /* ব্যালেন্স বক্সের max width ও overflow হ্যান্ডেল */
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 50px;
+      background-color: #0d1117;
+      border-top: 1px solid #1f2937;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 9999;
+    }
+    .bottom-nav i {
+      color: #9ca3af;
+      font-size: 20px;
+      transition: color 0.2s;
+    }
+    .bottom-nav i:hover {
+      color: #ffffff;
+    }
+    /* Balance Box Style */
     #balanceBox {
       max-width: 140px;
-      overflow: visible; /* full balance visible */
+      overflow: visible;
       white-space: nowrap;
       padding-left: 0.75rem !important;
       padding-right: 0.75rem !important;
-      height: 32px; /* ছোট উচ্চতা */
-    }
-    #balanceAmount {
-      font-size: 0.875rem; /* ছোট ফন্ট সাইজ */
-      max-width: none;
-      overflow: visible;
-      text-overflow: unset;
-      white-space: nowrap;
-      font-weight: 700;
-      color: white;
-      line-height: 1.1;
-    }
-
-    /* ব্যালেন্স বক্সের পিছনের হালকা ফর্ম বর্ডার সরানো */
-    #balanceBox {
+      height: 32px;
       background: transparent !important;
       border: none !important;
       padding-top: 0 !important;
       padding-bottom: 0 !important;
     }
-
-    /* ডিপোজিট বাটনের নিচে বর্ডার রিমুভ */
-    .fixed.bottom-0 {
-      border-top: none !important;
+    #balanceAmount {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: white;
+      line-height: 1.1;
     }
-
-    /* ব্যালেন্স লেবেল ফন্ট সেটিং */
     #balanceLabel {
       font-weight: 600;
       font-size: 0.95rem;
       flex-shrink: 0;
       line-height: 1.1;
     }
-
-    /* ব্যালেন্স বক্সে ফ্লেক্স আইটেম স্পেস */
     #balanceBox > div {
       margin-left: 0.4rem;
     }
-
-    /* Deposit Button ছোট ও চিকন করা */
     #depositBtn {
       padding: 0.25rem 0.75rem;
       font-size: 0.85rem;
@@ -60,15 +63,11 @@
       height: 32px;
       align-self: center;
     }
-
-    /* Balance Bar Container উচ্চতা কমানো ও প্যাডিং কমানো */
     .balance-bar {
       height: 40px;
       padding-left: 1rem;
       padding-right: 1rem;
     }
-
-    /* Deposit Form Overlay */
     #depositOverlay {
       position: fixed;
       inset: 0;
@@ -80,7 +79,7 @@
       padding: 1rem;
     }
     #depositForm {
-      background: #1f2937; /* Tailwind gray-800 */
+      background: #1f2937;
       padding: 1.5rem;
       border-radius: 0.5rem;
       width: 100%;
@@ -89,48 +88,44 @@
       overflow-y: auto;
       max-height: 90vh;
     }
+    #depositForm input,
+    #depositForm button,
     #depositForm label {
-      font-weight: 600;
-      margin-bottom: 0.25rem;
       display: block;
+      width: 100%;
     }
     #depositForm input[type="text"],
     #depositForm input[type="number"],
     #depositForm input[type="file"] {
-      width: 100%;
       padding: 0.5rem;
       border-radius: 0.375rem;
-      border: none;
-      margin-bottom: 1rem;
-      background: #374151; /* Tailwind gray-700 */
+      background: #374151;
       color: white;
-      outline: none;
+      margin-bottom: 1rem;
     }
     #depositForm input[readonly] {
-      background: #6b7280; /* Tailwind gray-500 */
+      background: #6b7280;
       cursor: not-allowed;
     }
     #depositForm button {
-      width: 100%;
-      background: #fbbf24; /* yellow-400 */
+      background: #fbbf24;
       color: black;
       font-weight: 700;
       padding: 0.75rem;
       border-radius: 0.375rem;
       cursor: pointer;
-      transition: background 0.3s;
       border: none;
     }
     #depositForm button:hover {
-      background: #f59e0b; /* yellow-500 */
+      background: #f59e0b;
     }
     #depositCloseBtn {
       position: absolute;
       top: 1rem;
       right: 1rem;
+      font-size: 1.5rem;
       background: transparent;
       border: none;
-      font-size: 1.5rem;
       color: white;
       cursor: pointer;
     }
@@ -140,15 +135,11 @@
 
   <!-- Balance Bar -->
   <div class="flex justify-between items-center bg-gray-800 shadow relative balance-bar">
-    <!-- Single balance box (Demo or Live) -->
     <div id="balanceBox" class="cursor-pointer select-none rounded flex items-center space-x-2 w-36">
       <div id="balanceLabel" class="text-yellow-400 font-semibold">Demo</div>
       <div id="balanceAmount">$10,000</div>
     </div>
-
     <button id="depositBtn" class="bg-yellow-500 text-black font-semibold">Deposit</button>
-
-    <!-- Balance Switch Modal -->
     <div id="balanceModal" class="hidden absolute top-full left-0 mt-1 bg-gray-800 border-t border-gray-600 rounded-b w-36 z-50 shadow-lg">
       <div class="p-3 space-y-2">
         <div class="flex items-center space-x-2 cursor-pointer hover:bg-gray-700 p-1 rounded" onclick="selectBalance('demo')">
@@ -164,31 +155,23 @@
   </div>
 
   <!-- Chart Area -->
-  <div class="h-[calc(100vh-230px)] bg-black flex items-center justify-center rounded">
+  <div class="h-[calc(100vh-280px)] bg-black flex items-center justify-center rounded">
     <span class="text-gray-400">[ Chart will be displayed here ]</span>
   </div>
 
   <!-- Trade Controls -->
-  <div class="fixed bottom-0 left-0 right-0 bg-gray-800 px-4 py-3 border-t border-gray-600">
-
-    <!-- Row 1: Amount + Profit -->
+  <div class="px-4 py-3 border-t border-gray-600">
     <div class="flex justify-between space-x-2 mb-2 text-sm">
-      <!-- Amount -->
       <div class="flex flex-col w-1/2">
         <label>Amount</label>
         <input id="amountInput" type="number" value="10" class="bg-gray-700 px-2 py-1 rounded text-sm outline-none" />
       </div>
-
-      <!-- Profit -->
       <div class="flex flex-col w-1/2">
         <label>Profit (95%)</label>
         <div id="profitDisplay" class="bg-gray-700 px-2 py-1 rounded text-sm text-green-400">$9.50</div>
       </div>
     </div>
-
-    <!-- Row 2: Timeframe + Market -->
     <div class="flex justify-between space-x-2 mb-3 text-sm">
-      <!-- Timeframe -->
       <div class="flex flex-col w-1/2">
         <label>Timeframe</label>
         <select class="bg-gray-700 px-2 py-1 rounded text-sm">
@@ -197,8 +180,6 @@
           <option>5 Minutes</option>
         </select>
       </div>
-
-      <!-- Market -->
       <div class="flex flex-col w-1/2">
         <label>Market</label>
         <select class="bg-gray-700 px-2 py-1 rounded text-sm">
@@ -208,29 +189,32 @@
         </select>
       </div>
     </div>
-
-    <!-- Trade Buttons -->
     <div class="flex justify-between space-x-4">
       <button class="w-full bg-green-500 hover:bg-green-600 text-black py-3 rounded font-bold">Up</button>
       <button class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded font-bold">Down</button>
     </div>
   </div>
 
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <i class="fas fa-chart-line"></i>
+    <i class="fas fa-question-circle"></i>
+    <i class="fas fa-user"></i>
+    <i class="fas fa-trophy"></i>
+    <i class="fas fa-ellipsis-h"></i>
+  </div>
+
   <!-- Deposit Form Overlay -->
   <div id="depositOverlay" class="flex">
-    <form id="depositForm" enctype="multipart/form-data">
-      <button type="button" id="depositCloseBtn" aria-label="Close Deposit Form">&times;</button>
+    <form id="depositForm">
+      <button type="button" id="depositCloseBtn">&times;</button>
       <h2 class="text-xl font-bold mb-4">Deposit Funds</h2>
-      
       <label for="binanceId">Binance ID</label>
-      <input type="text" id="binanceId" name="binanceId" value="your-binance-id-12345" readonly />
-
+      <input type="text" id="binanceId" value="your-binance-id-12345" readonly />
       <label for="depositAmount">Amount (USD)</label>
-      <input type="number" id="depositAmount" name="depositAmount" min="1" required placeholder="Enter deposit amount" />
-
+      <input type="number" id="depositAmount" required placeholder="Enter deposit amount" />
       <label for="depositScreenshot">Upload Screenshot</label>
-      <input type="file" id="depositScreenshot" name="depositScreenshot" accept="image/*" required />
-
+      <input type="file" id="depositScreenshot" accept="image/*" required />
       <button type="submit">Confirm Deposit</button>
     </form>
   </div>
@@ -247,16 +231,9 @@
     const depositForm = document.getElementById("depositForm");
     const depositCloseBtn = document.getElementById("depositCloseBtn");
 
-    // Initial balances
-    const balances = {
-      demo: 10000,
-      live: 0
-    };
-
-    // Current selected balance type
+    const balances = { demo: 10000, live: 0 };
     let currentBalanceType = 'demo';
 
-    // Update profit on amount input
     function updateProfit() {
       const amount = parseFloat(amountInput.value) || 0;
       const profit = (amount * 0.95).toFixed(2);
@@ -265,64 +242,44 @@
     amountInput.addEventListener("input", updateProfit);
     updateProfit();
 
-    // Toggle modal visibility on balance box click
     balanceBox.addEventListener("click", () => {
       balanceModal.classList.toggle("hidden");
     });
 
-    // Select balance from modal
     function selectBalance(type) {
       currentBalanceType = type;
       balanceLabel.textContent = type === 'demo' ? 'Demo' : 'Live';
       balanceLabel.className = type === 'demo' ? 'text-yellow-400 font-semibold' : 'text-green-400 font-semibold';
-
-      if(type === 'demo'){
-        balanceAmount.textContent = `$${balances.demo.toLocaleString('en-US')}`;
-      } else {
-        balanceAmount.textContent = `$${balances.live.toLocaleString('en-US')}`;
-      }
+      balanceAmount.textContent = `$${balances[type].toLocaleString('en-US')}`;
       balanceModal.classList.add("hidden");
-
       document.getElementById(type === 'demo' ? "demoRadio" : "liveRadio").checked = true;
     }
-
     window.selectBalance = selectBalance;
 
-    // Close balance modal if clicked outside
     window.addEventListener('click', (e) => {
       if (!balanceBox.contains(e.target) && !balanceModal.contains(e.target)) {
         balanceModal.classList.add('hidden');
       }
     });
 
-    // Deposit button open form
     depositBtn.addEventListener("click", () => {
       depositOverlay.style.display = 'flex';
     });
 
-    // Close deposit form
     depositCloseBtn.addEventListener("click", () => {
       depositOverlay.style.display = 'none';
       depositForm.reset();
     });
 
-    // Deposit form submission
     depositForm.addEventListener("submit", e => {
       e.preventDefault();
-
-      // Simple validation for demonstration
       if (!depositForm.depositAmount.value || !depositForm.depositScreenshot.files.length) {
         alert("Please fill all required fields.");
         return;
       }
-
       alert("Deposit request submitted. Admin will verify shortly.");
-
-      // Reset and hide form
       depositForm.reset();
       depositOverlay.style.display = 'none';
-
-      // Here you would send the deposit info and screenshot to your backend/server/admin panel
     });
   </script>
 
