@@ -8,26 +8,30 @@
   <style>
     /* ব্যালেন্স বক্সের max width ও overflow হ্যান্ডেল */
     #balanceBox {
-      max-width: 160px;
-      overflow: visible; /* changed so full balance visible */
+      max-width: 140px;
+      overflow: visible; /* full balance visible */
       white-space: nowrap;
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+      height: 32px; /* ছোট উচ্চতা */
     }
     #balanceAmount {
-      font-size: 1rem; /* ছোট ফন্ট সাইজ */
-      max-width: none; /* পুরো টেক্সট দেখানোর জন্য */
+      font-size: 0.875rem; /* ছোট ফন্ট সাইজ */
+      max-width: none;
       overflow: visible;
       text-overflow: unset;
       white-space: nowrap;
       font-weight: 700;
       color: white;
+      line-height: 1.1;
     }
 
     /* ব্যালেন্স বক্সের পিছনের হালকা ফর্ম বর্ডার সরানো */
     #balanceBox {
       background: transparent !important;
       border: none !important;
-      padding-left: 0 !important;
-      padding-right: 0 !important;
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
     }
 
     /* ডিপোজিট বাটনের নিচে বর্ডার রিমুভ */
@@ -38,13 +42,30 @@
     /* ব্যালেন্স লেবেল ফন্ট সেটিং */
     #balanceLabel {
       font-weight: 600;
-      font-size: 1.125rem;
+      font-size: 0.95rem;
       flex-shrink: 0;
+      line-height: 1.1;
     }
 
     /* ব্যালেন্স বক্সে ফ্লেক্স আইটেম স্পেস */
     #balanceBox > div {
-      margin-left: 0.5rem;
+      margin-left: 0.4rem;
+    }
+
+    /* Deposit Button ছোট ও চিকন করা */
+    #depositBtn {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.85rem;
+      border-radius: 0.375rem;
+      height: 32px;
+      align-self: center;
+    }
+
+    /* Balance Bar Container উচ্চতা কমানো ও প্যাডিং কমানো */
+    .balance-bar {
+      height: 40px;
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
 
     /* Deposit Form Overlay */
@@ -118,14 +139,14 @@
 <body class="bg-gray-900 text-white font-sans">
 
   <!-- Balance Bar -->
-  <div class="flex justify-between items-center px-4 py-4 bg-gray-800 shadow relative">
+  <div class="flex justify-between items-center bg-gray-800 shadow relative balance-bar">
     <!-- Single balance box (Demo or Live) -->
-    <div id="balanceBox" class="cursor-pointer select-none rounded px-6 py-3 flex items-center space-x-3 w-40">
-      <div id="balanceLabel" class="text-yellow-400 font-semibold text-lg">Demo</div>
+    <div id="balanceBox" class="cursor-pointer select-none rounded flex items-center space-x-2 w-36">
+      <div id="balanceLabel" class="text-yellow-400 font-semibold">Demo</div>
       <div id="balanceAmount">$10,000</div>
     </div>
 
-    <button id="depositBtn" class="bg-yellow-500 px-3 py-1 rounded text-black font-semibold">Deposit</button>
+    <button id="depositBtn" class="bg-yellow-500 text-black font-semibold">Deposit</button>
 
     <!-- Balance Switch Modal -->
     <div id="balanceModal" class="hidden absolute top-full left-0 mt-1 bg-gray-800 border-t border-gray-600 rounded-b w-36 z-50 shadow-lg">
@@ -253,7 +274,7 @@
     function selectBalance(type) {
       currentBalanceType = type;
       balanceLabel.textContent = type === 'demo' ? 'Demo' : 'Live';
-      balanceLabel.className = type === 'demo' ? 'text-yellow-400 font-semibold text-lg' : 'text-green-400 font-semibold text-lg';
+      balanceLabel.className = type === 'demo' ? 'text-yellow-400 font-semibold' : 'text-green-400 font-semibold';
 
       if(type === 'demo'){
         balanceAmount.textContent = `$${balances.demo.toLocaleString('en-US')}`;
@@ -265,58 +286,44 @@
       document.getElementById(type === 'demo' ? "demoRadio" : "liveRadio").checked = true;
     }
 
-    // Close modal if clicked outside
-    window.addEventListener('click', function(e) {
+    window.selectBalance = selectBalance;
+
+    // Close balance modal if clicked outside
+    window.addEventListener('click', (e) => {
       if (!balanceBox.contains(e.target) && !balanceModal.contains(e.target)) {
-        balanceModal.classList.add("hidden");
+        balanceModal.classList.add('hidden');
       }
     });
 
-    // Show deposit form overlay
+    // Deposit button open form
     depositBtn.addEventListener("click", () => {
-      depositOverlay.style.display = "flex";
+      depositOverlay.style.display = 'flex';
     });
 
     // Close deposit form
     depositCloseBtn.addEventListener("click", () => {
-      depositOverlay.style.display = "none";
+      depositOverlay.style.display = 'none';
       depositForm.reset();
     });
 
-    // Handle deposit form submission
-    depositForm.addEventListener("submit", function(e) {
+    // Deposit form submission
+    depositForm.addEventListener("submit", e => {
       e.preventDefault();
 
-      const binanceId = depositForm.binanceId.value;
-      const amount = depositForm.depositAmount.value;
-      const screenshot = depositForm.depositScreenshot.files[0];
-
-      if (!amount || amount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-      }
-      if (!screenshot) {
-        alert("Please upload a screenshot.");
+      // Simple validation for demonstration
+      if (!depositForm.depositAmount.value || !depositForm.depositScreenshot.files.length) {
+        alert("Please fill all required fields.");
         return;
       }
 
-      // এখানে তোমার ফরম ডাটা সার্ভারে পাঠানোর জন্য AJAX / fetch / Firebase ইত্যাদি যুক্ত করবে
-      // এখন কনসোলে শুধু ডাটা দেখানো হচ্ছে:
+      alert("Deposit request submitted. Admin will verify shortly.");
 
-      console.log("Deposit Request:");
-      console.log("Binance ID:", binanceId);
-      console.log("Amount:", amount);
-      console.log("Screenshot:", screenshot);
-
-      alert("Deposit request sent! Admin will confirm it soon.");
-
-      // ফর্ম রিসেট ও ফর্ম বন্ধ করা
+      // Reset and hide form
       depositForm.reset();
-      depositOverlay.style.display = "none";
-    });
+      depositOverlay.style.display = 'none';
 
-    // প্রথমে ডেমো ব্যালেন্স সিলেক্টেড থাকবে ও প্রদর্শিত হবে
-    selectBalance('demo');
+      // Here you would send the deposit info and screenshot to your backend/server/admin panel
+    });
   </script>
 
 </body>
