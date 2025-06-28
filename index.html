@@ -1,285 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Binary Trading</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-  <style>
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      height: 50px;
-      background-color: #0d1117;
-      border-top: 1px solid #1f2937;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 9999;
+(async function runLicenseCheck() {
+  const waitForDOM = () => new Promise(res => {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", res);
+    } else {
+      res();
     }
-    .bottom-nav i {
-      color: #9ca3af;
-      font-size: 20px;
-      transition: color 0.2s;
-    }
-    .bottom-nav i:hover {
-      color: #ffffff;
-    }
-    #balanceBox {
-      max-width: 140px;
-      overflow: visible;
-      white-space: nowrap;
-      padding-left: 0.75rem !important;
-      padding-right: 0.75rem !important;
-      height: 32px;
-      background: transparent !important;
-      border: none !important;
-      padding-top: 0 !important;
-      padding-bottom: 0 !important;
-    }
-    #balanceAmount {
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: white;
-      line-height: 1.1;
-    }
-    #balanceLabel {
-      font-weight: 600;
-      font-size: 0.95rem;
-      flex-shrink: 0;
-      line-height: 1.1;
-    }
-    #balanceBox > div {
-      margin-left: 0.4rem;
-    }
-    #depositBtn {
-      padding: 0.25rem 0.75rem;
-      font-size: 0.85rem;
-      border-radius: 0.375rem;
-      height: 32px;
-      align-self: center;
-    }
-    .balance-bar {
-      height: 40px;
-      padding-left: 1rem;
-      padding-right: 1rem;
-    }
-    #depositOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      display: none;
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-    #depositForm {
-      background: #1f2937;
-      padding: 1.5rem;
-      border-radius: 0.5rem;
-      width: 100%;
-      max-width: 400px;
-      color: white;
-      overflow-y: auto;
-      max-height: 90vh;
-    }
-    #depositForm input,
-    #depositForm button,
-    #depositForm label {
-      display: block;
-      width: 100%;
-    }
-    #depositForm input[type="text"],
-    #depositForm input[type="number"],
-    #depositForm input[type="file"] {
-      padding: 0.5rem;
-      border-radius: 0.375rem;
-      background: #374151;
-      color: white;
-      margin-bottom: 1rem;
-    }
-    #depositForm input[readonly] {
-      background: #6b7280;
-      cursor: not-allowed;
-    }
-    #depositForm button {
-      background: #fbbf24;
-      color: black;
-      font-weight: 700;
-      padding: 0.75rem;
-      border-radius: 0.375rem;
-      cursor: pointer;
-      border: none;
-    }
-    #depositForm button:hover {
-      background: #f59e0b;
-    }
-    #depositCloseBtn {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      font-size: 1.5rem;
-      background: transparent;
-      border: none;
-      color: white;
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body class="bg-gray-900 text-white font-sans">
+  });
 
-  <!-- Balance Bar -->
-  <div class="flex justify-between items-center bg-gray-800 shadow relative balance-bar">
-    <div id="balanceBox" class="cursor-pointer select-none rounded flex items-center space-x-2 w-36">
-      <div id="balanceLabel" class="text-yellow-400 font-semibold">Demo</div>
-      <div id="balanceAmount">$10,000</div>
-    </div>
-    <button id="depositBtn" class="bg-yellow-500 text-black font-semibold">Deposit</button>
-    <div id="balanceModal" class="hidden absolute top-full left-0 mt-1 bg-gray-800 border-t border-gray-600 rounded-b w-36 z-50 shadow-lg">
-      <div class="p-3 space-y-2">
-        <div class="flex items-center space-x-2 cursor-pointer hover:bg-gray-700 p-1 rounded" onclick="selectBalance('demo')">
-          <input type="radio" name="balanceType" id="demoRadio" checked />
-          <label for="demoRadio" class="text-yellow-400 font-semibold text-sm">Demo Balance</label>
+  const loadScript = src => new Promise(res => {
+    if (document.querySelector(`script[src="${src}"]`)) return res();
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = res;
+    document.head.appendChild(s);
+  });
+
+  await waitForDOM();
+  await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+  await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');
+
+  if (!window.firebase?.apps?.length) {
+    firebase.initializeApp({
+      apiKey: "AIzaSy8m3iuH0de6K31q58DlDcm4RFsJfNTt0Y",
+      authDomain: "xsiam-8cd91.firebaseapp.com",
+      databaseURL: "https://xsiam-8cd91-default-rtdb.firebaseio.com",
+      projectId: "xsiam-8cd91",
+      storageBucket: "xsiam-8cd91.appspot.com",
+      messagingSenderId: "449795686178",
+      appId: "1:449795686178:web:67631b23b88be6a0eaef7b",
+      measurementId: "G-C987LSZV4G"
+    });
+  }
+
+  const db = firebase.firestore();
+
+  if (document.getElementById("licenseModalBackdrop")) return;
+
+  const html = `
+    <div id="licenseModalBackdrop" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);display:flex;justify-content:center;align-items:center;z-index:99999;">
+      <div id="licenseModal" style="background:#fff;padding:30px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.25);width:360px;text-align:center;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+        <h1 style="margin:0;font-size:24px;color:#222;">UI Script</h1>
+        <h2 style="margin-top:6px;font-size:16px;color:#28a745;">By Rifat</h2>
+        <div style="font-size:14px;margin:18px 0 4px;color:#333;">Enter your license key to continue</div>
+        <div style="font-size:13px;color:black;margin-bottom:14px;margin-top:4px;">This will authorize your device for system access</div>
+        <input type="text" id="licenseKey" placeholder="Enter license key..." style="width:100%;padding:12px;border-radius:8px;border:1px solid #bbb;margin-bottom:18px;font-size:14px;outline:none;" autocomplete="off" />
+        <div style="display:flex;justify-content:space-between;">
+          <button id="verifyBtn" style="width:48%;padding:10px;font-size:14px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(to right,#28a745,#218838);color:white;">Verify License</button>
+          <button id="cancelBtn" disabled style="width:48%;padding:10px;font-size:14px;border:none;border-radius:8px;background:gray;color:white;opacity:0.6;cursor:not-allowed;">Cancel</button>
         </div>
-        <div class="flex items-center space-x-2 cursor-pointer hover:bg-gray-700 p-1 rounded" onclick="selectBalance('live')">
-          <input type="radio" name="balanceType" id="liveRadio" />
-          <label for="liveRadio" class="text-green-400 font-semibold text-sm">Live Balance</label>
+        <div id="message" style="margin-top:15px;font-size:14px;font-weight:bold;"></div>
+        <div style="margin-top:20px;font-size:13px;color:#555;">
+          <div style="margin-top:15px;display:flex;justify-content:center;align-items:center;gap:6px;">
+            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" style="width:18px;" />
+            <a href="https://t.me/rifat07_X" target="_blank" style="color:#007bff;text-decoration:none;">@rifat07_X</a>
+          </div>
+          <div style="margin-top:5px;">By Rifat</div>
         </div>
       </div>
     </div>
-  </div>
+    <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
+  `;
 
-  <!-- Chart Area (smaller height) -->
-  <div class="h-[calc(100vh-320px)] bg-black flex items-center justify-center rounded">
-    <span class="text-gray-400">[ Chart will be displayed here ]</span>
-  </div>
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html;
+  document.body.appendChild(wrapper);
 
-  <!-- Trade Controls -->
-  <div class="px-4 py-3 border-t border-gray-600">
-    <div class="flex justify-between space-x-2 mb-2 text-sm">
-      <div class="flex flex-col w-1/2">
-        <label>Amount</label>
-        <input id="amountInput" type="number" value="10" class="bg-gray-700 px-2 py-1 rounded text-sm outline-none" />
-      </div>
-      <div class="flex flex-col w-1/2">
-        <label>Profit (95%)</label>
-        <div id="profitDisplay" class="bg-gray-700 px-2 py-1 rounded text-sm text-green-400">$9.50</div>
-      </div>
-    </div>
-    <div class="flex justify-between space-x-2 mb-3 text-sm">
-      <div class="flex flex-col w-1/2">
-        <label>Timeframe</label>
-        <select class="bg-gray-700 px-2 py-1 rounded text-sm">
-          <option>1 Minute</option>
-          <option>3 Minutes</option>
-          <option>5 Minutes</option>
-        </select>
-      </div>
-      <div class="flex flex-col w-1/2">
-        <label>Market</label>
-        <select class="bg-gray-700 px-2 py-1 rounded text-sm">
-          <option>EUR/USD</option>
-          <option>BTC/USD</option>
-          <option>GBP/USD</option>
-        </select>
-      </div>
-    </div>
-    <div class="flex justify-between space-x-4">
-      <button class="w-full bg-green-500 hover:bg-green-600 text-black py-3 rounded font-bold">Up</button>
-      <button class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded font-bold">Down</button>
-    </div>
-  </div>
+  const inputEl = document.getElementById("licenseKey");
+  const verifyBtn = document.getElementById("verifyBtn");
+  const messageEl = document.getElementById("message");
+  const modalBackdrop = document.getElementById("licenseModalBackdrop");
 
-  <!-- Bottom Nav -->
-  <div class="bottom-nav">
-    <i class="fas fa-chart-line"></i>
-    <i class="fas fa-question-circle"></i>
-    <i class="fas fa-user"></i>
-    <i class="fas fa-trophy"></i>
-    <i class="fas fa-ellipsis-h"></i>
-  </div>
-
-  <!-- Deposit Form Overlay -->
-  <div id="depositOverlay" class="flex">
-    <form id="depositForm">
-      <button type="button" id="depositCloseBtn">&times;</button>
-      <h2 class="text-xl font-bold mb-4">Deposit Funds</h2>
-      <label for="binanceId">Binance ID</label>
-      <input type="text" id="binanceId" value="your-binance-id-12345" readonly />
-      <label for="depositAmount">Amount (USD)</label>
-      <input type="number" id="depositAmount" required placeholder="Enter deposit amount" />
-      <label for="depositScreenshot">Upload Screenshot</label>
-      <input type="file" id="depositScreenshot" accept="image/*" required />
-      <button type="submit">Confirm Deposit</button>
-    </form>
-  </div>
-
-  <script>
-    const amountInput = document.getElementById("amountInput");
-    const profitDisplay = document.getElementById("profitDisplay");
-    const balanceBox = document.getElementById("balanceBox");
-    const balanceModal = document.getElementById("balanceModal");
-    const balanceLabel = document.getElementById("balanceLabel");
-    const balanceAmount = document.getElementById("balanceAmount");
-    const depositBtn = document.getElementById("depositBtn");
-    const depositOverlay = document.getElementById("depositOverlay");
-    const depositForm = document.getElementById("depositForm");
-    const depositCloseBtn = document.getElementById("depositCloseBtn");
-
-    const balances = { demo: 10000, live: 0 };
-    let currentBalanceType = 'demo';
-
-    function updateProfit() {
-      const amount = parseFloat(amountInput.value) || 0;
-      const profit = (amount * 0.95).toFixed(2);
-      profitDisplay.textContent = `$${profit}`;
+  const getDeviceId = () => {
+    let id = localStorage.getItem("deviceId");
+    if (!id) {
+      id = "device-" + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("deviceId", id);
     }
-    amountInput.addEventListener("input", updateProfit);
-    updateProfit();
+    return id;
+  };
 
-    balanceBox.addEventListener("click", () => {
-      balanceModal.classList.toggle("hidden");
-    });
-
-    function selectBalance(type) {
-      currentBalanceType = type;
-      balanceLabel.textContent = type === 'demo' ? 'Demo' : 'Live';
-      balanceLabel.className = type === 'demo' ? 'text-yellow-400 font-semibold' : 'text-green-400 font-semibold';
-      balanceAmount.textContent = `$${balances[type].toLocaleString('en-US')}`;
-      balanceModal.classList.add("hidden");
-      document.getElementById(type === 'demo' ? "demoRadio" : "liveRadio").checked = true;
+  verifyBtn.addEventListener("click", async () => {
+    const val = inputEl.value.trim();
+    messageEl.textContent = "";
+    if (!val) {
+      messageEl.textContent = "❗ Please enter your license key";
+      messageEl.style.color = "#dc3545";
+      return;
     }
-    window.selectBalance = selectBalance;
+    messageEl.innerHTML = '<span style="border:2px solid #fff;border-top:2px solid #ccc;border-radius:50%;width:16px;height:16px;animation:spin 0.6s linear infinite;display:inline-block;margin-right:6px;"></span>Verifying...';
+    verifyBtn.disabled = true;
 
-    window.addEventListener('click', (e) => {
-      if (!balanceBox.contains(e.target) && !balanceModal.contains(e.target)) {
-        balanceModal.classList.add('hidden');
+    try {
+      const snap = await db.collection("licenses").where("key", "==", val).limit(1).get();
+      if (snap.empty) {
+        messageEl.textContent = "❌ License Key Not Found!";
+        messageEl.style.color = "#dc3545";
+      } else {
+        const doc = snap.docs[0];
+        const data = doc.data();
+        const docRef = doc.ref;
+
+        if (!data.active) {
+          messageEl.textContent = "❌ License is inactive!";
+          messageEl.style.color = "#dc3545";
+          verifyBtn.disabled = false;
+          return;
+        }
+
+        const maxDevices = data.maxDevices || 1;
+        const deviceId = getDeviceId();
+
+        const usedDevicesSnap = await db.collection("devices").where("licenseKey", "==", val).get();
+        const usedDeviceCount = usedDevicesSnap.size;
+
+        const alreadyRegistered = usedDevicesSnap.docs.some(d => d.data().deviceId === deviceId);
+
+        if (!alreadyRegistered && usedDeviceCount >= maxDevices) {
+          await docRef.update({ active: false });
+          messageEl.textContent = "🚫 License exceeded device limit and has been blocked!";
+          messageEl.style.color = "#dc3545";
+        } else {
+          if (!alreadyRegistered) {
+            await db.collection("devices").add({
+              deviceId,
+              licenseKey: val,
+              verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+
+          messageEl.textContent = "✅ License Verified Successfully!";
+          messageEl.style.color = "#28a745";
+
+          setTimeout(() => {
+            modalBackdrop.remove();
+            document.dispatchEvent(new CustomEvent("license-verified"));
+          }, 500);
+        }
       }
-    });
+    } catch (e) {
+      console.error(e);
+      messageEl.textContent = "⚠️ Error verifying license, try again later.";
+      messageEl.style.color = "#dc3545";
+    } finally {
+      verifyBtn.disabled = false;
+    }
+  });
 
-    depositBtn.addEventListener("click", () => {
-      depositOverlay.style.display = 'flex';
-    });
-
-    depositCloseBtn.addEventListener("click", () => {
-      depositOverlay.style.display = 'none';
-      depositForm.reset();
-    });
-
-    depositForm.addEventListener("submit", e => {
-      e.preventDefault();
-      if (!depositForm.depositAmount.value || !depositForm.depositScreenshot.files.length) {
-        alert("Please fill all required fields.");
-        return;
-      }
-      alert("Deposit request submitted. Admin will verify shortly.");
-      depositForm.reset();
-      depositOverlay.style.display = 'none';
-    });
-  </script>
-
-</body>
-</html>
+  inputEl.focus();
+})();
