@@ -1,150 +1,586 @@
-(async function runLicenseCheck() {
-  const waitForDOM = () => new Promise(res => {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", res);
-    } else {
-      res();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HACKER BY ALDI</title>
+  <style>
+    body {
+      background: #000;
+      color: #00ff00;
+      font-family: monospace;
+      margin: 0;
     }
-  });
+    .terminal {
+      padding: 20px;
+      height: 100vh;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .input-line {
+      display: flex;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .prompt {
+      color: #00ff00;
+      user-select: none;
+    }
+    .terminal-input {
+      background: transparent;
+      border: none;
+      color: #00ff00;
+      outline: none;
+      font-family: monospace;
+      font-size: 16px;
+      width: 100%;
+    }
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #00ff00;
+      margin-bottom: 20px;
+      font-family: monospace;
+      letter-spacing: 3px;
+      user-select: none;
+      text-transform: uppercase;
+    }
+    .signal-line {
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+      gap: 10px;
+      font-size: 16px;
+      user-select: text;
+    }
+    .checkbox-container {
+      width: 14px;
+      height: 14px;
+      border: 2px solid red;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .checkbox-container.checked {
+      border-color: #0f0;
+      background-color: #0f0;
+      cursor: default;
+    }
+    .checkbox-container input[type="checkbox"] {
+      display: none;
+    }
+    .checkbox-container.checked::after {
+      content: "✔";
+      color: #000;
+      font-weight: bold;
+      font-size: 12px;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
 
-  const loadScript = src => new Promise(res => {
-    if (document.querySelector(`script[src="${src}"]`)) return res();
-    const s = document.createElement('script');
-    s.src = src;
-    s.onload = res;
-    document.head.appendChild(s);
-  });
-
-  await waitForDOM();
-  await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
-  await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');
-
-  if (!window.firebase?.apps?.length) {
-    firebase.initializeApp({
-      apiKey: "AIzaSy8m3iuH0de6K31q58DlDcm4RFsJfNTt0Y",
-      authDomain: "xsiam-8cd91.firebaseapp.com",
-      databaseURL: "https://xsiam-8cd91-default-rtdb.firebaseio.com",
-      projectId: "xsiam-8cd91",
-      storageBucket: "xsiam-8cd91.appspot.com",
-      messagingSenderId: "449795686178",
-      appId: "1:449795686178:web:67631b23b88be6a0eaef7b",
-      measurementId: "G-C987LSZV4G"
+  <script>
+  // LICENSE VERIFY UI
+  (async function runLicenseCheck() {
+    const waitForDOM = () => new Promise(res => {
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", res);
+      } else {
+        res();
+      }
     });
-  }
 
-  const db = firebase.firestore();
+    const loadScript = src => new Promise(res => {
+      if (document.querySelector(`script[src="${src}"]`)) return res();
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = res;
+      document.head.appendChild(s);
+    });
 
-  if (document.getElementById("licenseModalBackdrop")) return;
+    await waitForDOM();
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js');
 
-  const html = `
-    <div id="licenseModalBackdrop" style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);display:flex;justify-content:center;align-items:center;z-index:99999;">
-      <div id="licenseModal" style="background:#fff;padding:30px;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.25);width:360px;text-align:center;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
-        <h1 style="margin:0;font-size:24px;color:#222;">UI Script</h1>
-        <h2 style="margin-top:6px;font-size:16px;color:#28a745;">By Rifat</h2>
-        <div style="font-size:14px;margin:18px 0 4px;color:#333;">Enter your license key to continue</div>
-        <div style="font-size:13px;color:black;margin-bottom:14px;margin-top:4px;">This will authorize your device for system access</div>
-        <input type="text" id="licenseKey" placeholder="Enter license key..." style="width:100%;padding:12px;border-radius:8px;border:1px solid #bbb;margin-bottom:18px;font-size:14px;outline:none;" autocomplete="off" />
-        <div style="display:flex;justify-content:space-between;">
-          <button id="verifyBtn" style="width:48%;padding:10px;font-size:14px;border:none;border-radius:8px;cursor:pointer;background:linear-gradient(to right,#28a745,#218838);color:white;">Verify License</button>
-          <button id="cancelBtn" disabled style="width:48%;padding:10px;font-size:14px;border:none;border-radius:8px;background:gray;color:white;opacity:0.6;cursor:not-allowed;">Cancel</button>
-        </div>
-        <div id="message" style="margin-top:15px;font-size:14px;font-weight:bold;"></div>
-        <div style="margin-top:20px;font-size:13px;color:#555;">
-          <div style="margin-top:15px;display:flex;justify-content:center;align-items:center;gap:6px;">
-            <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" style="width:18px;" />
-            <a href="https://t.me/rifat07_X" target="_blank" style="color:#007bff;text-decoration:none;">@rifat07_X</a>
+    if (!window.firebase?.apps?.length) {
+      firebase.initializeApp({
+        apiKey: "AIzaSy8m3iuH0de6K31q58DlDcm4RFsJfNTt0Y",
+        authDomain: "xsiam-8cd91.firebaseapp.com",
+        databaseURL: "https://xsiam-8cd91-default-rtdb.firebaseio.com",
+        projectId: "xsiam-8cd91",
+        storageBucket: "xsiam-8cd91.appspot.com",
+        messagingSenderId: "449795686178",
+        appId: "1:449795686178:web:67631b23b88be6a0eaef7b",
+        measurementId: "G-C987LSZV4G"
+      });
+    }
+
+    const db = firebase.firestore();
+
+    if (document.getElementById("licenseModalBackdrop")) return;
+
+    const html = `
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        #licenseModalBackdrop {
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 99999;
+          font-family: 'Share Tech Mono', monospace;
+          color: #00ff00;
+          user-select: none;
+        }
+        #licenseModal {
+          background: #111;
+          border: 2px solid #00ff00;
+          padding: 30px 36px;
+          border-radius: 12px;
+          box-shadow: 0 0 20px #00ff00aa;
+          width: 360px;
+          text-align: center;
+          position: relative;
+        }
+        #licenseModal h1 {
+          font-size: 28px;
+          margin: 0;
+          letter-spacing: 2px;
+          text-shadow: 0 0 8px #00ff00;
+        }
+        #licenseModal h2 {
+          font-size: 16px;
+          margin-top: 4px;
+          color: #0f0;
+          font-weight: normal;
+          text-transform: uppercase;
+          text-shadow: 0 0 6px #0f0;
+        }
+        #licenseModal > div.message-info {
+          font-size: 14px;
+          margin: 16px 0 6px;
+          color: #0f0;
+          letter-spacing: 0.8px;
+        }
+        #licenseModal > div.message-sub {
+          font-size: 12px;
+          color: #080;
+          margin-bottom: 18px;
+          opacity: 0.7;
+        }
+        #licenseKey {
+          width: 100%;
+          padding: 14px 12px;
+          border-radius: 6px;
+          border: 1px solid #00ff00;
+          background: #111;
+          color: #0f0;
+          font-family: 'Share Tech Mono', monospace;
+          font-size: 16px;
+          outline: none;
+          box-shadow: inset 0 0 8px #00ff00;
+          transition: border-color 0.3s;
+          caret-color: #0f0;
+          user-select: text;
+        }
+        #licenseKey::placeholder {
+          color: #055005;
+          font-style: italic;
+        }
+        #licenseKey:focus {
+          border-color: #0f0;
+          box-shadow: 0 0 10px #0f0;
+        }
+        #licenseModal button {
+          width: 48%;
+          padding: 12px;
+          font-size: 14px;
+          font-family: 'Share Tech Mono', monospace;
+          border-radius: 8px;
+          border: none;
+          cursor: pointer;
+          letter-spacing: 1px;
+          user-select: none;
+          transition: background 0.3s ease;
+          box-shadow: 0 0 10px #00ff00aa;
+        }
+        #verifyBtn {
+          background: linear-gradient(90deg, #00ff00, #00cc00);
+          color: #000;
+          font-weight: 700;
+          text-shadow: 0 0 3px #000;
+        }
+        #verifyBtn:disabled {
+          background: #006600;
+          cursor: wait;
+          box-shadow: none;
+          color: #004400;
+        }
+        #cancelBtn {
+          background: #222;
+          color: #007700;
+          opacity: 0.5;
+          cursor: not-allowed;
+          user-select: none;
+        }
+        #message {
+          margin-top: 18px;
+          font-size: 15px;
+          min-height: 24px;
+          letter-spacing: 0.5px;
+          font-weight: 700;
+          text-shadow:
+            0 0 6px #00ff00,
+            0 0 10px #00ff00;
+        }
+        #footer {
+          margin-top: 24px;
+          font-size: 12px;
+          color: #008800;
+          opacity: 0.7;
+          user-select: none;
+        }
+        #footer a {
+          color: #00ff00;
+          text-decoration: none;
+          font-weight: bold;
+        }
+        #footer a:hover {
+          text-decoration: underline;
+        }
+        #footer img {
+          filter: drop-shadow(0 0 3px #00ff00);
+          width: 18px;
+          vertical-align: middle;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .spinner {
+          display: inline-block;
+          width: 16px;
+          height: 16px;
+          border: 2px solid #0f0;
+          border-top: 2px solid transparent;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          vertical-align: middle;
+          margin-right: 8px;
+        }
+        @keyframes typing {
+          from { width: 0; }
+          to { width: 100%; }
+        }
+        #message.typing {
+          overflow: hidden;
+          white-space: nowrap;
+          border-right: 3px solid #0f0;
+          animation: typing 1.5s steps(30, end);
+        }
+      </style>
+
+      <div id="licenseModalBackdrop" aria-modal="true" role="dialog" aria-labelledby="licenseTitle">
+        <div id="licenseModal" role="document">
+          <h1 id="licenseTitle">SYSTEM ACCESS</h1>
+          <h2>By Rifat</h2>
+          <div class="message-info">ENTER YOUR LICENSE KEY TO CONTINUE</div>
+          <div class="message-sub">Authorize your device for system access</div>
+          <input type="text" id="licenseKey" placeholder="Enter license key..." autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none" />
+          <div style="display:flex; justify-content:space-between; gap:8px; margin-top:12px;">
+            <button id="verifyBtn">VERIFY LICENSE</button>
+            <button id="cancelBtn" disabled>CANCEL</button>
           </div>
-          <div style="margin-top:5px;">By Rifat</div>
+          <div id="message" aria-live="polite" role="alert"></div>
+          <div id="footer">
+            <div style="display:flex; justify-content:center; align-items:center; gap:6px; margin-top:18px;">
+              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram icon" />
+              <a href="https://t.me/rifat07_X" target="_blank" rel="noopener noreferrer">@rifat07_X</a>
+            </div>
+            <div style="margin-top:6px;">By Rifat</div>
+          </div>
         </div>
       </div>
-    </div>
-    <style>@keyframes spin{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}</style>
-  `;
+    `;
 
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = html;
-  document.body.appendChild(wrapper);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper);
 
-  const inputEl = document.getElementById("licenseKey");
-  const verifyBtn = document.getElementById("verifyBtn");
-  const messageEl = document.getElementById("message");
-  const modalBackdrop = document.getElementById("licenseModalBackdrop");
+    const inputEl = document.getElementById("licenseKey");
+    const verifyBtn = document.getElementById("verifyBtn");
+    const messageEl = document.getElementById("message");
+    const modalBackdrop = document.getElementById("licenseModalBackdrop");
 
-  const getDeviceId = () => {
-    let id = localStorage.getItem("deviceId");
-    if (!id) {
-      id = "device-" + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem("deviceId", id);
-    }
-    return id;
-  };
+    const getDeviceId = () => {
+      let id = localStorage.getItem("deviceId");
+      if (!id) {
+        id = "device-" + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem("deviceId", id);
+      }
+      return id;
+    };
 
-  verifyBtn.addEventListener("click", async () => {
-    const val = inputEl.value.trim();
-    messageEl.textContent = "";
-    if (!val) {
-      messageEl.textContent = "❗ Please enter your license key";
-      messageEl.style.color = "#dc3545";
-      return;
-    }
-    messageEl.innerHTML = '<span style="border:2px solid #fff;border-top:2px solid #ccc;border-radius:50%;width:16px;height:16px;animation:spin 0.6s linear infinite;display:inline-block;margin-right:6px;"></span>Verifying...';
-    verifyBtn.disabled = true;
+    verifyBtn.addEventListener("click", async () => {
+      const val = inputEl.value.trim();
+      messageEl.textContent = "";
+      messageEl.classList.remove("typing");
+      if (!val) {
+        messageEl.textContent = "❗ PLEASE ENTER YOUR LICENSE KEY";
+        messageEl.style.color = "#ff0000";
+        return;
+      }
 
-    try {
-      const snap = await db.collection("licenses").where("key", "==", val).limit(1).get();
-      if (snap.empty) {
-        messageEl.textContent = "❌ License Key Not Found!";
-        messageEl.style.color = "#dc3545";
-      } else {
-        const doc = snap.docs[0];
-        const data = doc.data();
-        const docRef = doc.ref;
+      messageEl.innerHTML = `<span class="spinner"></span>VERIFYING...`;
+      messageEl.style.color = "#00ff00";
+      verifyBtn.disabled = true;
 
-        if (!data.active) {
-          messageEl.textContent = "❌ License is inactive!";
-          messageEl.style.color = "#dc3545";
-          verifyBtn.disabled = false;
-          return;
-        }
-
-        const maxDevices = data.maxDevices || 1;
-        const deviceId = getDeviceId();
-
-        const usedDevicesSnap = await db.collection("devices").where("licenseKey", "==", val).get();
-        const usedDeviceCount = usedDevicesSnap.size;
-
-        const alreadyRegistered = usedDevicesSnap.docs.some(d => d.data().deviceId === deviceId);
-
-        if (!alreadyRegistered && usedDeviceCount >= maxDevices) {
-          await docRef.update({ active: false });
-          messageEl.textContent = "🚫 License exceeded device limit and has been blocked!";
-          messageEl.style.color = "#dc3545";
+      try {
+        const snap = await db.collection("licenses").where("key", "==", val).limit(1).get();
+        if (snap.empty) {
+          messageEl.textContent = "❌ LICENSE KEY NOT FOUND!";
+          messageEl.style.color = "#ff0000";
         } else {
-          if (!alreadyRegistered) {
-            await db.collection("devices").add({
-              deviceId,
-              licenseKey: val,
-              verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+          const doc = snap.docs[0];
+          const data = doc.data();
+          const docRef = doc.ref;
+
+          if (!data.active) {
+            messageEl.textContent = "❌ LICENSE IS INACTIVE!";
+            messageEl.style.color = "#ff0000";
+            verifyBtn.disabled = false;
+            return;
           }
 
-          messageEl.textContent = "✅ License Verified Successfully!";
-          messageEl.style.color = "#28a745";
+          const maxDevices = data.maxDevices || 1;
+          const deviceId = getDeviceId();
 
-          setTimeout(() => {
-            modalBackdrop.remove();
-            document.dispatchEvent(new CustomEvent("license-verified"));
-          }, 500);
+          const usedDevicesSnap = await db.collection("devices").where("licenseKey", "==", val).get();
+          const usedDeviceCount = usedDevicesSnap.size;
+
+          const alreadyRegistered = usedDevicesSnap.docs.some(d => d.data().deviceId === deviceId);
+
+          if (!alreadyRegistered && usedDeviceCount >= maxDevices) {
+            await docRef.update({ active: false });
+            messageEl.textContent = "🚫 LICENSE EXCEEDED DEVICE LIMIT AND HAS BEEN BLOCKED!";
+            messageEl.style.color = "#ff0000";
+          } else {
+            if (!alreadyRegistered) {
+              await db.collection("devices").add({
+                deviceId,
+                licenseKey: val,
+                verifiedAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            }
+
+            messageEl.textContent = "✅ LICENSE VERIFIED SUCCESSFULLY!";
+            messageEl.style.color = "#00ff00";
+            messageEl.classList.add("typing");
+
+            setTimeout(() => {
+              modalBackdrop.remove();
+              document.dispatchEvent(new CustomEvent("license-verified"));
+            }, 1000);
+          }
         }
+      } catch (e) {
+        console.error(e);
+        messageEl.textContent = "⚠️ ERROR VERIFYING LICENSE, TRY AGAIN LATER.";
+        messageEl.style.color = "#ff0000";
+      } finally {
+        verifyBtn.disabled = false;
       }
-    } catch (e) {
-      console.error(e);
-      messageEl.textContent = "⚠️ Error verifying license, try again later.";
-      messageEl.style.color = "#dc3545";
-    } finally {
-      verifyBtn.disabled = false;
-    }
+    });
+
+    inputEl.focus();
+  })();
+
+  // Wait for license check before running terminal
+  document.addEventListener("license-verified", function() {
+    // Now run the terminal
+    initTerminal();
   });
 
-  inputEl.focus();
-})();
+  // Terminal logic in a function so it only runs after license is verified
+  function initTerminal() {
+    // Place terminal into #app instead of body
+    const app = document.getElementById('app');
+    app.innerHTML = `
+      <div class="terminal" id="terminal">
+        <div class="title">HACKER BY ALDI</div>
+        <div>> Step 1: Type market name (e.g., EUR/USD)</div>
+        <div>> Step 2: Type timeframe in minutes (e.g., 1)</div><br>
+      </div>
+    `;
+
+    const terminal = document.getElementById('terminal');
+
+    const originalMarkets = [
+      "USD/BRL (OTC)", "USD/DZD (OTC)", "USD/EGP (OTC)", "USD/INR (OTC)", "NZD/CAD (OTC)",
+      "USD/IDR (OTC)", "USD/PKR (OTC)", "USD/COP (OTC)", "USD/ZAR (OTC)", "CAD/CHF (OTC)",
+      "USD/NGN (OTC)", "AUD/NZD (OTC)", "EUR/SGD (OTC)", "NZD/JPY (OTC)", "GBP/CHF (OTC)",
+      "USD/MXN (OTC)", "USD/PHP (OTC)", "USD/BDT (OTC)", "NZD/CHF (OTC)", "USD/ARS (OTC)",
+      "EUR/NZD (OTC)", "NZD/USD (OTC)", "GBP/NZD (OTC)", "AUD/CHF", "AUD/JPY", "CAD/JPY",
+      "CHF/JPY", "EUR/CAD", "EUR/CHF", "GBP/USD", "USD/JPY", "EUR/USD", "AUD/CAD", "EUR/AUD",
+      "GBP/CAD", "EUR/GBP", "EUR/JPY", "GBP/AUD", "GBP/JPY", "USD/CAD", "USD/CHF", "AUD/USD"
+    ];
+
+    function normalizeMarket(market) {
+      return market.replace(/[\s\/\(\)]/g, '').toUpperCase();
+    }
+
+    const normalizedMarketMap = new Map(originalMarkets.map(m => [normalizeMarket(m), m]));
+
+    let state = { market: null, timeframe: null };
+
+    function createInputLine() {
+      const line = document.createElement('div'); 
+      line.classList.add('input-line');
+      const prompt = document.createElement('span'); 
+      prompt.classList.add('prompt'); 
+      prompt.innerText = '> ';
+      const input = document.createElement('input'); 
+      input.classList.add('terminal-input'); 
+      input.autofocus = true;
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          const cmd = input.value.trim();
+          if (!cmd) return;
+          line.remove();
+          addLine(`> ${cmd}`);
+          processInput(cmd);
+        }
+      });
+      line.appendChild(prompt); 
+      line.appendChild(input);
+      terminal.appendChild(line);
+      input.focus();
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function addLine(text) {
+      const line = document.createElement('div');
+      line.innerText = text;
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function addSignalLine(text) {
+      const line = document.createElement('div');
+      line.classList.add('signal-line');
+
+      const checkboxContainer = document.createElement('label');
+      checkboxContainer.classList.add('checkbox-container');
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) {
+          checkboxContainer.classList.add('checked');
+          checkbox.disabled = true;
+          checkboxContainer.style.cursor = 'default';
+        }
+      });
+
+      checkboxContainer.appendChild(checkbox);
+
+      const textSpan = document.createElement('span');
+      textSpan.textContent = text;
+
+      line.appendChild(textSpan);
+      line.appendChild(checkboxContainer);
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    function formatTime(d) {
+      return d.toTimeString().slice(0,5);
+    }
+
+    function generateSignalAdvanced() {
+      const smaShort = 1 + Math.random() * 0.5;
+      const smaLong = 1 + Math.random() * 0.5;
+      const rsi = Math.floor(Math.random() * 61) + 20;
+      const macdDiff = (Math.random() - 0.5) * 2;
+      const stochastic = Math.random() * 100;
+      const bollingerBand = Math.random();
+      const volumeSpike = Math.random();
+      const otcVolatility = Math.random();
+      const momentum = Math.random();
+      const trendStrength = Math.random();
+
+      const isOTC = state.market.includes('(OTC)');
+      if (isOTC) {
+        if (smaShort > smaLong && rsi > 45 && rsi < 75 && macdDiff > 0 && stochastic < 80 && bollingerBand > 0.4 && volumeSpike > 0.5 && otcVolatility > 0.6 && momentum > 0.4 && trendStrength > 0.5) return 'CALL';
+        if (smaShort < smaLong && rsi > 25 && rsi < 55 && macdDiff < 0 && stochastic > 20 && bollingerBand < 0.6 && volumeSpike < 0.5 && otcVolatility < 0.4 && momentum < 0.6 && trendStrength < 0.5) return 'PUT';
+      } else {
+        if (smaShort > smaLong && rsi >= 50 && rsi <= 70 && macdDiff > 0 && stochastic < 80) return 'CALL';
+        if (smaShort < smaLong && rsi >= 30 && rsi <= 50 && macdDiff < 0 && stochastic > 20) return 'PUT';
+      }
+      return Math.random() > 0.55 ? 'CALL' : 'PUT';
+    }
+
+    function scheduleFutureSignal(tf) {
+      const now = new Date();
+      const tfMillis = tf * 60000;
+      const nextCandleTime = new Date(Math.ceil(now.getTime() / tfMillis) * tfMillis);
+      const signalTime = new Date(nextCandleTime.getTime() - 2 * 60000);
+      const delay = signalTime - now;
+      const finalSignalTime = formatTime(nextCandleTime);
+      const sig = generateSignalAdvanced();
+
+      if (delay <= 0) {
+        addSignalLine(`${finalSignalTime} - ${sig} - ${state.market}`);
+        reset();
+      } else {
+        setTimeout(() => {
+          addSignalLine(`${finalSignalTime} - ${sig} - ${state.market}`);
+          reset();
+        }, delay);
+      }
+    }
+
+    function reset() {
+      state.market = null;
+      state.timeframe = null;
+      createInputLine();
+    }
+
+    function processInput(cmd) {
+      if (!state.market) {
+        const normalized = normalizeMarket(cmd);
+        if (normalizedMarketMap.has(normalized)) {
+          state.market = normalizedMarketMap.get(normalized);
+          addLine(`Market selected: ${state.market}`);
+          addLine(`Enter timeframe in minutes:`);
+          createInputLine();
+        } else {
+          addLine(`Invalid market name. Please enter a valid market (e.g., EUR/USD or USD/BRL (OTC))`);
+          createInputLine();
+        }
+      } else if (!state.timeframe) {
+        const tf = parseInt(cmd);
+        if (isNaN(tf) || tf < 1) {
+          addLine(`Invalid timeframe. Please enter a positive integer for minutes.`);
+          createInputLine();
+        } else {
+          state.timeframe = tf;
+          addLine(`Timeframe selected: ${tf} minute(s)`);
+          addLine(`Analyzing ${state.market} for timeframe ${state.timeframe} minutes...`);
+          scheduleFutureSignal(tf);
+        }
+      }
+    }
+
+    createInputLine();
+  }
+  </script>
+</body>
+</html>
